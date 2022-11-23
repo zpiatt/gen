@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Generate: A command-line system information tool written in bash 5.2+.
+# Generate: A command-line script file generation tool written in bash 5.2+.
 # https://github.com/membersincewayback/gen
 #
 # The MIT License (MIT)
