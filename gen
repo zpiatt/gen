@@ -58,7 +58,7 @@ EOF
 
 touchsh() {
 cat << EOF
-#!/usr/bin/${ext}
+#!/bin/${ext}
 
 EOF
 }
