@@ -76,14 +76,40 @@ check_ext() {
     esac
 }
 
+usage() {
+cat << EOF
+this will be a help page
+EOF
+exit
+}
+
+get_args() {
+while getopts e:h OPTION; do
+    case $OPTION in
+        e) EDITOR=$OPTARG ;;
+        h) usage ;;
+        ?) usage ;;
+    esac
+done
+}
+
+exists() {
+    if [[ -e "$1" ]]; then
+        echo "Filename already exists."
+        exit
+    else
+        touch "$1"
+    fi
+}
+
 main() {
-    if [[ "$#" -eq 1 ]]; then
-        if [[ -e "$1" ]]; then
-            echo "Filename already exists."
-        else
-            touch "$1"
-            check_ext "$1"
-        fi
+    if [[ "$#" -gt 2 ]]; then
+        get_args "$@"
+        exists "$3"
+        check_ext "$3"
+    elif [[ "$#" -eq 1 ]]; then
+        exists "$1"
+        check_ext "$1"
     else
         printf "Please specify filename and extension. (Example: 'gen example.txt')\n"
     fi
