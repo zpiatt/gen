@@ -26,43 +26,57 @@
 # SOFTWARE.
 
 touchpy() {
-    printf "def main():\n\t\n\nif __name__ == '__main__':\n\tmain()" >> "$1"
-    ${EDITOR:-vi} +2 "$1"
+cat << EOF
+def main():
+
+if __name__ == '__main__':
+    main()
+EOF
 }
 
 touchpl() {
-    chmod u+x "$1"
-    printf "#!/usr/bin/perl\n\nuse strict;\nuse warnings;\n\n" >> "$1"
-    ${EDITOR:-vi} +5 "$1"
+cat << EOF
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+EOF
 }
 
 touchc() {
-    printf "#include <stdio.h>\n\nint main()\n{\n\n\t\n\n}" >> "$1"
-    ${EDITOR:-vi} +6 "$1"
+cat << EOF
+#include <stdio.h>
+
+int main()
+{
+
+   return 0;
+}
+EOF
 }
 
 touchsh() {
-    chmod u+x "$1"
     printf "#!/usr/bin/%s\n\n" "$script" >> "$1"
     ${EDITOR:-vi} +2 "$1"
 }
 
-unknown() {
-    ${EDITOR:-vi} "$1"
+executable() {
+    chmod u+x "$1"
 }
 
 check_ext() {
     ext=$(echo "$1" | awk -F. '{print $2}')
-    case "$ext" in
-        py )        touchpy "$1"                    ;;
-        pl )        touchpl "$1"                    ;;
-        c )         touchc "$1"                     ;;
-        sh|bash )   script="bash"; touchsh "$1"     ;;
-        ksh )       script="ksh"; touchsh "$1"      ;;
-        csh )       script="csh"; touchsh "$1"      ;;
-        awk )       script="awk"; touchsh "$1"      ;;
-        * )         unknown "$1"                    ;;
-    esac
+        case "$ext" in
+            py )        touchpy >> "$1"; ${EDITOR:-vi} +2 "$1"                      ;;
+            pl )        executable "$1"; touchpl >> "$1"; ${EDITOR:-vi} +5 "$1"     ;;
+            c )         touchc >> "$1"; ${EDITOR:-vi} +6 "$1"                       ;;
+            sh|bash )   executable "$1"; script="bash"; touchsh "$1"                ;;
+            ksh )       executable "$1"; script="ksh"; touchsh "$1"                 ;;
+            csh )       executable "$1"; script="csh"; touchsh "$1"                 ;;
+            awk )       executable "$1"; script="awk"; touchsh "$1"                 ;;
+            * )         ${EDITOR:-vi} "$1"                                          ;;
+        esac
 }
 
 main() {
