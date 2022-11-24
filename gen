@@ -62,9 +62,8 @@ check_ext() {
         ksh )       script="ksh"; touchsh "$1"      ;;
         csh )       script="csh"; touchsh "$1"      ;;
         awk )       script="awk"; touchsh "$1"      ;;
-         * )         unknown "$1"                    ;;
+        * )         unknown "$1"                    ;;
     esac
-    fi
 }
 
 main() {
