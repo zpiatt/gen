@@ -26,95 +26,70 @@
 # SOFTWARE.
 #!/bin/bash
 
+#!/bin/bash
+
 touchpy() {
-    new=${1}.${2}
-    if [[ -f "$new" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$new"
-        printf "def main():\n\t\n\nif __name__ == '__main__':\n\tmain()" >> "$new"
-            ${EDITOR:-vi} +2 "$new"
-    fi
+    printf "def main():\n\t\n\nif __name__ == '__main__':\n\tmain()" >> "$1"
+    ${EDITOR:-vi} +2 "$1"
 }
 
 touchpl() {
-    new=${1}.${2}
-    if [[ -f "$new" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$new"
-        chmod u+x "$new"
-        printf "#!/usr/bin/perl\n\nuse strict;\nuse warnings;\n\n" >> "$new"
-            ${EDITOR:-vi} +5 "$new"
-    fi
+    chmod u+x "$1"
+    printf "#!/usr/bin/perl\n\nuse strict;\nuse warnings;\n\n" >> "$1"
+    ${EDITOR:-vi} +5 "$1"
 }
 
 touchc() {
-    new=${1}.${2}
-    if [[ -f "$new" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$new"
-        printf "#include <stdio.h>\n\nint main()\n{\n\n\t\n\n}" >> "$new"
-            ${EDITOR:-vi} +6 "$new"
-    fi
+    printf "#include <stdio.h>\n\nint main()\n{\n\n\t\n\n}" >> "$1"
+    ${EDITOR:-vi} +6 "$1"
 }
 
 generic() {
-    new=${1}.${2}
-    if [[ -f "$new" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$new"
-        chmod u+x "$new"
-        printf "#!/usr/bin/%s\n\n" "$script" >> "$new"
-            ${EDITOR:-vi} +2 "$new"
-    fi
+    chmod u+x "$1"
+    printf "#!/usr/bin/%s\n\n" "$script" >> "$1"
+    ${EDITOR:-vi} +2 "$1"
 }
 
 unknown() {
-    new=${1}.${2}
-    if [[ -f "$new" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$new"
-            ${EDITOR} "$new"
-    fi
-}
-
-no_ext() {
-    if [[ -e "$1" ]]; then
-        echo "Filename already exists."
-    else
-        touch "$1"
-            ${EDITOR:-vi} "$1"
-    fi
+    ${EDITOR:-vi} "$1"
 }
 
 check_ext() {
-    if [[ "$2" ]]; then
-        case "$2" in
-            sh|bash )   script="bash"; generic "$@"     ;;
-            ksh )       script="ksh"; generic "$@"      ;;
-            awk )       script="awk"; generic "$@"      ;;
-            pl )        touchpl "$@"                    ;;
-            py )        touchpy "$@"                    ;;
-            c )         touchc "$@"                     ;;
-            * )         unknown "$@"                    ;;
+
+    file=$(echo "$1" | awk -F. '{print $1}')
+    ext=$(echo "$1" | awk -F. '{print $2}')
+
+    if [[ "$ext" ]]; then
+        case "$ext" in
+            sh|bash )   script="bash"; generic "$1"     ;;
+            ksh )       script="ksh"; generic "$1"      ;;
+            awk )       script="awk"; generic "$1"      ;;
+            pl )        touchpl "$1"                    ;;
+            py )        touchpy "$1"                    ;;
+            c )         touchc "$1"                     ;;
+            * )         unknown "$1"                    ;;
         esac
     else
-        no_ext "$1"
+        unknown "$1"
     fi
 }
 
+
 main() {
-if [[ "$#" -eq 1 ]]; then
-    file=$(echo "$1" | awk -F. '{print $1}')
-    ext=$(echo "$1" | awk -F. '{print $2}')
-    check_ext "$file" "$ext"
-else
-    printf "Please specify filename and extension. (Example: 'gen example.txt')\n"
-fi
+
+    if [[ "$#" -eq 1 ]]; then
+        new="$1"
+        if [[ -f "$1" ]]; then
+            echo "Filename already exists."
+        else
+            touch "$new"
+            check_ext "$new"
+        fi
+    else
+        printf "Please specify filename and extension. (Example: 'gen example.txt')\n"
+    fi
+
 }
+
 
 main "$@"
