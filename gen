@@ -63,20 +63,16 @@ cat << EOF
 EOF
 }
 
-executable() {
-    chmod u+x "$1"
-}
-
 check_ext() {
     ext=$(echo "$1" | awk -F. '{print $2}')
     case "$ext" in
         py ) touchpy >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
         pl ) executable "$1"; touchpl >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
         c ) touchc >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
-        sh|bash ) executable "$1"; ext="bash"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        ksh ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        csh ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        awk ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        sh|bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        ksh ) chmod u+x "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        csh ) chmod u+x "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        awk ) chmod u+x "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
         * ) ${EDITOR:-vi} "$1" ;;
     esac
 }
