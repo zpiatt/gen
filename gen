@@ -75,7 +75,7 @@ check_ext() {
 main() {
     if [[ "$#" -eq 1 ]]; then
         new="$1"
-        if [[ -f "$1" ]]; then
+        if [[ -e "$1" ]]; then
             echo "Filename already exists."
         else
             touch "$new"
