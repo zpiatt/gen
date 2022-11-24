@@ -108,6 +108,7 @@ main() {
         exists "$3"
         check_ext "$3"
     elif [[ "$#" -eq 1 ]]; then
+        get_args "$1"
         exists "$1"
         check_ext "$1"
     else
