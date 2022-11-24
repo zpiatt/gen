@@ -52,7 +52,6 @@ unknown() {
 }
 
 check_ext() {
-    file=$(echo "$1" | awk -F. '{print $1}')
     ext=$(echo "$1" | awk -F. '{print $2}')
     case "$ext" in
         py )        touchpy "$1"                    ;;
