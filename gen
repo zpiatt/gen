@@ -78,7 +78,7 @@ check_ext() {
 
 usage() {
 cat << EOF
-this will be a help page
+Please specify filename and extension. (Example: 'gen example.txt')
 EOF
 exit
 }
@@ -112,7 +112,7 @@ main() {
         exists "$1"
         check_ext "$1"
     else
-        printf "Please specify filename and extension. (Example: 'gen example.txt')\n"
+        usage
     fi
 }
 
