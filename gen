@@ -57,8 +57,10 @@ EOF
 }
 
 touchsh() {
-    printf "#!/usr/bin/%s\n\n" "$script" >> "$1"
-    ${EDITOR:-vi} +2 "$1"
+cat << EOF
+#!/usr/bin/${ext}
+
+EOF
 }
 
 executable() {
@@ -67,16 +69,16 @@ executable() {
 
 check_ext() {
     ext=$(echo "$1" | awk -F. '{print $2}')
-        case "$ext" in
-            py )        touchpy >> "$1"; ${EDITOR:-vi} +2 "$1"                      ;;
-            pl )        executable "$1"; touchpl >> "$1"; ${EDITOR:-vi} +5 "$1"     ;;
-            c )         touchc >> "$1"; ${EDITOR:-vi} +6 "$1"                       ;;
-            sh|bash )   executable "$1"; script="bash"; touchsh "$1"                ;;
-            ksh )       executable "$1"; script="ksh"; touchsh "$1"                 ;;
-            csh )       executable "$1"; script="csh"; touchsh "$1"                 ;;
-            awk )       executable "$1"; script="awk"; touchsh "$1"                 ;;
-            * )         ${EDITOR:-vi} "$1"                                          ;;
-        esac
+    case "$ext" in
+        py ) touchpy >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        pl ) executable "$1"; touchpl >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
+        c ) touchc >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
+        sh|bash ) executable "$1"; ext="bash"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        ksh ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        csh ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        awk ) executable "$1"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
+        * ) ${EDITOR:-vi} "$1" ;;
+    esac
 }
 
 main() {
