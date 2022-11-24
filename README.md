@@ -2,7 +2,7 @@
 Generate (gen) is a command line tool to automate creation of script files, modification of file permissions, and input typical text.
 
 Upcoming features:
-  - Supress automatically launching editor.
+  - Option to supress automatically launching editor (gen -s test.txt).
   - Handle expansions (gen test{00.99}.txt).
   - Option to select editor (gen -e emacs test.txt).
  
