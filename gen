@@ -72,12 +72,11 @@ check_ext() {
 
 main() {
     if [[ "$#" -eq 1 ]]; then
-        new="$1"
         if [[ -e "$1" ]]; then
             echo "Filename already exists."
         else
-            touch "$new"
-            check_ext "$new"
+            touch "$1"
+            check_ext "$1"
         fi
     else
         printf "Please specify filename and extension. (Example: 'gen example.txt')\n"
