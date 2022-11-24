@@ -51,7 +51,7 @@ touchpl() {
         if [[ -n $EDITOR ]]; then
             $EDITOR +5 "$new"
         else
-            /usr/bin/vi +3 "$new"
+            /usr/bin/vi +5 "$new"
         fi
     fi
 }
@@ -66,7 +66,7 @@ touchc() {
         if [[ -n $EDITOR ]]; then
             $EDITOR +6 "$new"
         else
-            /usr/bin/vi +2 "$new"
+            /usr/bin/vi +6 "$new"
         fi
     fi
 }
@@ -122,7 +122,7 @@ check_ext() {
             awk )       script="awk"; generic "$@"      ;;
             pl )        touchpl "$@"                    ;;
             py )        touchpy "$@"                    ;;
-            c )         touchc "$@"                    ;;
+            c )         touchc "$@"                     ;;
             * )         unknown "$@"                    ;;
         esac
     else
