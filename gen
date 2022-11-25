@@ -111,8 +111,8 @@ exists() {
 
 main() {
     if [[ "$#" -le 3 ]]; then
-        exists "${@: -1}"
         get_args "$@"
+        exists "${@: -1}"
         check_ext "${@: -1}"
     else
         usage
