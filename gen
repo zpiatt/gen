@@ -109,21 +109,17 @@ exists() {
         echo "Filename already exists."
         exit
     else
-        touch "$1"
+        if ! touch "$1"; then
+            usage
+        fi
     fi
 }
 
 main() {
-    if [[ "$#" -ge 1 && "$#" -le 3 ]]; then
-        get_args "$@"
-        exists "${@: -1}"
-        check_ext "${@: -1}"
-    else
-        usage
-    fi
-    if ! [[ ${suppress} ]]; then
-        ${EDITOR:-vi} +"${line:-2}" "$1"
-    fi
+    get_args "$@"
+    exists "${@: -1}"
+    check_ext "${@: -1}"
+    [[ ! ${suppress} ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
 }
 
 main "$@"
