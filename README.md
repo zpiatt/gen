@@ -10,4 +10,4 @@ Upcoming features:
  
  Please send me any ideas for expanding scripting languages or features!
 
-![](https://github.com/membersincewayback/gen/blob/main/gen.gif)
+![](https://github.com/membersincewayback/gen/blob/main/gen_v1.0.gif)
