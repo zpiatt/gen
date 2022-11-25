@@ -26,7 +26,7 @@
 # SOFTWARE.
 
 touchpy() {
-cat << EOF
+    cat << EOF
 def main():
 
 if __name__ == '__main__':
@@ -37,7 +37,6 @@ EOF
 touchpl() {
 cat << EOF
 #!/usr/bin/perl
-
 use strict;
 use warnings;
 
@@ -47,7 +46,6 @@ EOF
 touchc() {
 cat << EOF
 #include <stdio.h>
-
 int main()
 {
 
@@ -63,19 +61,6 @@ cat << EOF
 EOF
 }
 
-check_ext() {
-    case "$1" in
-        *.py ) touchpy >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        *.pl ) chmod u+x "$1"; touchpl >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
-        *.c ) touchc >> "$1"; ${EDITOR:-vi} +5 "$1" ;;
-        *.sh|*.bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        *.csh ) chmod u+x "$1"; ext="csh"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        *.awk ) chmod u+x "$1"; ext="awk"; touchsh >> "$1"; ${EDITOR:-vi} +2 "$1" ;;
-        * ) ${EDITOR:-vi} "$1" ;;
-    esac
-}
-
 usage() {
 cat << EOF
 Please specify filename and extension. (Example: 'gen example.txt')
@@ -83,10 +68,32 @@ EOF
 exit
 }
 
+launch() {
+    if [[ ${suppress} ]]; then
+        exit
+    else
+        ${EDITOR:-vi} +"${line:-2}" "$1"
+    fi
+}
+
+check_ext() {
+    case "$1" in
+        *.py ) touchpy >> "$1"; launch "$1" ;;
+        *.pl ) chmod u+x "$1"; touchpl >> "$1"; line=4; launch "$1" ;;
+        *.c ) touchc >> "$1"; line=4; launch "$1" ;;
+        *.sh|*.bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1"; launch "$1" ;;
+        *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh >> "$1"; launch "$1" ;;
+        *.csh ) chmod u+x "$1"; ext="csh"; touchsh >> "$1"; launch "$1" ;;
+        *.awk ) chmod u+x "$1"; ext="awk"; touchsh >> "$1"; launch "$1" ;;
+        * ) launch "$1" ;;
+    esac
+}
+
 get_args() {
-while getopts e:h OPTION; do
+while getopts 'e:sh' OPTION; do
     case $OPTION in
         e) EDITOR=$OPTARG ;;
+        s) suppress="True" ;;
         h) usage ;;
         ?) usage ;;
     esac
@@ -103,14 +110,10 @@ exists() {
 }
 
 main() {
-    if [[ "$#" -gt 2 ]]; then
+    if [[ "$#" -le 3 ]]; then
         get_args "$@"
-        exists "$3"
-        check_ext "$3"
-    elif [[ "$#" -eq 1 ]]; then
-        get_args "$1"
-        exists "$1"
-        check_ext "$1"
+        exists "${@: -1}"
+        check_ext "${@: -1}"
     else
         usage
     fi
