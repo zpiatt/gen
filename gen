@@ -25,6 +25,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+version="Generate (gen) version: 1.0"
+
 touchpy() {
 cat << EOF
 def main():
@@ -63,7 +65,16 @@ EOF
 
 usage() {
 cat << EOF
-Please specify filename and extension. (Example: 'gen example.txt')
+Usage: gen [OPTION]... [FILE]...
+Generate FILE, auto-input typical text, and auto-launch default editor.
+
+  -e,   select editor ( gen -e nano test.txt )
+  -s,   suppress auto-launch of editor
+  -h,   display this help and exit
+  -v,   display version number and exit
+
+Full documentation <https://github.com/membersincewayback/gen>
+${version}
 EOF
 exit
 }
@@ -90,11 +101,12 @@ check_ext() {
 }
 
 get_args() {
-while getopts 'e:sh' OPTION; do
+while getopts 'e:shv' OPTION; do
     case $OPTION in
         e) EDITOR=$OPTARG ;;
         s) suppress="True" ;;
         h) usage ;;
+        v) echo "${version}"; exit ;;
         ?) usage ;;
     esac
 done
@@ -110,7 +122,7 @@ exists() {
 }
 
 main() {
-    if [[ "$#" -le 3 ]]; then
+    if [[ "$#" -ge 1 && "$#" -le 3 ]]; then
         get_args "$@"
         exists "${@: -1}"
         check_ext "${@: -1}"
