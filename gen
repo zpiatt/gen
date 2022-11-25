@@ -26,7 +26,7 @@
 # SOFTWARE.
 
 touchpy() {
-    cat << EOF
+cat << EOF
 def main():
 
 if __name__ == '__main__':
@@ -111,8 +111,8 @@ exists() {
 
 main() {
     if [[ "$#" -le 3 ]]; then
-        get_args "$@"
         exists "${@: -1}"
+        get_args "$@"
         check_ext "${@: -1}"
     else
         usage
