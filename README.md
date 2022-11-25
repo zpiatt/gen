@@ -1,8 +1,10 @@
 # gen
 Generate (gen) is a command line tool to automate creation of script files, modification of file permissions, and input typical text.
+Version 1.0 - Nov. 25m 2022
 
 Upcoming features:
   - Handle expansions ( gen test{00..10}.txt )
+  - Dynamic Python version detection; echo "/bin/python[2-3.11]" and make executable
  
  Recently added:
   - "-e" now allows selection of editor ( gen -e emacs test.txt )
