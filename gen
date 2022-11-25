@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Generate: A command-line script file generation tool written in bash 5.2+.
 # https://github.com/membersincewayback/gen
@@ -51,7 +51,7 @@ EOF
 
 touchsh() {
 cat << EOF
-#!/bin/${ext}
+#!/usr/bin/env ${ext}
 
 EOF
 }
