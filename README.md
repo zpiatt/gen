@@ -1,6 +1,6 @@
 # gen
 Generate (gen) is a command line tool to automate creation of script files, modification of file permissions, and input typical text.
-Version 1.0 - Nov. 25m 2022
+  Version 1.0 - Nov. 25, 2022
 
 Upcoming features:
   - Handle expansions ( gen test{00..10}.txt )
