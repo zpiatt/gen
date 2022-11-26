@@ -56,7 +56,7 @@ ${template}
 
     else
 
-touchpy() { [[ "${quiet}" ]] && return
+touchpy() {
 cat << EOF
 def main():
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 EOF
 }
 
-touchpl() { [[ "${quiet}" ]] && return
+touchpl() {
 cat << EOF
 #!/usr/bin/perl
 use strict;
@@ -74,7 +74,7 @@ use warnings;
 EOF
 }
 
-touchc() { [[ "${quiet}" ]] && return
+touchc() {
 cat << EOF
 #include <stdio.h>
 
@@ -85,14 +85,14 @@ int main()
 EOF
 }
 
-touchsh() { [[ "${quiet}" ]] && return
+touchsh() {
 cat << EOF
 #!/usr/bin/env ${EXT}
 
 EOF
 }
 
-touchhtml() { [[ "${quiet}" ]] && return
+touchhtml() {
 cat << EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -131,17 +131,17 @@ exit
 }
 
 check_ext() {
-    case "$1" in
-        *py ) touchpy >> "$1" ;;
-        *pl ) chmod u+x "$1"; line=4; touchpl >> "$1" ;;
-        *c ) line=4; touchc >> "$1" ;;
-        *sh|*.bash ) chmod u+x "$1"; EXT="bash"; touchsh >> "$1" ;;
-        *ksh ) chmod u+x "$1"; touchsh >> "$1" ;;
-        *csh ) chmod u+x "$1"; touchsh >> "$1" ;;
-        *awk ) chmod u+x "$1"; touchsh >> "$1" ;;
-        *js ) chmod u+x "$1"; EXT="node"; touchsh >> "$1" ;;
-        *html|*htm ) touchhtml >> "$1" ;;
-        * ) return ;;
+    case "$EXT" in
+        *py ) touch="py" ;;
+        *pl ) chmod u+x "$FILENAME"; line=4; touch="pl" ;;
+        *c ) line=4; touch="c" ;;
+        *sh|*bash ) chmod u+x "$FILENAME"; EXT="bash"; ;;
+        *ksh ) chmod u+x "$FILENAME" ;;
+        *csh ) chmod u+x "$FILENAME" ;;
+        *awk ) chmod u+x "$FILENAME" ;;
+        *js ) chmod u+x "$FILENAME"; EXT="node"; touch="js" ;;
+        *html|*htm ) touch="html" ;;
+        * ) quiet="True"; return ;;
     esac
 }
 
@@ -175,7 +175,8 @@ main() {
     get_args "$@"
     exists
     template_check
-    check_ext "${FILENAME}"
+    check_ext
+    [[ ! "${quiet}" ]] && touch${touch:-sh} >> ${FILENAME}
     [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
 }
 
