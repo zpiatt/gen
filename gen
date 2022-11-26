@@ -18,6 +18,60 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+touchpy() {
+cat << EOF
+def main():
+
+if __name__ == '__main__':
+    main()
+EOF
+}
+
+touchpl() {
+cat << EOF
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+EOF
+}
+
+touchc() {
+cat << EOF
+#include <stdio.h>
+
+int main()
+{
+   return 0;
+}
+EOF
+}
+
+touchsh() {
+cat << EOF
+#!/usr/bin/env ${ext}
+
+EOF
+}
+
+touchhtml() {
+cat << EOF
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HTML 5 Boilerplate</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+        <script src="index.js"></script>
+  </body>
+</html>
+EOF
+}
+
 version="Generate (gen) version: 1.0"
 
 usage() {
@@ -75,9 +129,6 @@ exists() {
 }
 
 main() {
-    if [[ -f templates ]]; then
-        source templates
-    fi
     get_args "$@"
     exists "${@: -1}"
     check_ext "${@: -1}"
