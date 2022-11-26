@@ -22,37 +22,8 @@ version="Generate (gen) version: 1.1 - November 26, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATES}" ]]; then
-    template="$(< "${TEMPLATES}")"
-
-touchpy() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchpl() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchc() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchsh() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchhtml() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
+        template="$(< "${TEMPLATES}")"
+        source templates/template_main
 
     else
 
