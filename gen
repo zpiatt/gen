@@ -20,13 +20,45 @@
 
 version="Generate (gen) version: 1.1 - November 26, 2022"
 
-ext=$(echo "${1##*.}")
-templates=templates/template.$ext
-if [[ -f $templates ]]; then
-    template=$(cat "$templates")
-fi
+FILENAME="${@: -1}"
+EXT="${FILENAME#*.}"
+TEMPLATES=templates/template.${EXT}
 
-if [[ ! -f $templates ]]; then
+[[ -f "${TEMPLATES}" ]] && template=$(cat "$TEMPLATES")
+
+if [[ -f "${TEMPLATES}" ]]; then
+
+touchpy() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
+touchpl() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
+touchc() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
+touchsh() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
+touchhtml() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
+else
 
 touchpy() { [[ "${quiet}" ]] && return
 cat << EOF
@@ -59,7 +91,7 @@ EOF
 
 touchsh() { [[ "${quiet}" ]] && return
 cat << EOF
-#!/usr/bin/env ${ext}
+#!/usr/bin/env ${EXT}
 
 EOF
 }
@@ -82,37 +114,6 @@ cat << EOF
 EOF
 }
 
-else
-
-touchpy() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchpl() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchc() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchsh() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
-
-touchhtml() {
-cat <<[-]EOF
-${template}
-[-]EOF
-}
 fi
 
 usage() {
@@ -134,15 +135,15 @@ exit
 
 check_ext() {
     case "$1" in
-        *.py ) touchpy >> "$1" ;;
-        *.pl ) chmod u+x "$1"; line=4; touchpl >> "$1" ;;
-        *.c ) line=4; touchc >> "$1" ;;
-        *.sh|*.bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1" ;;
-        *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh >> "$1" ;;
-        *.csh ) chmod u+x "$1"; ext="csh"; touchsh >> "$1" ;;
-        *.awk ) chmod u+x "$1"; ext="awk"; touchsh >> "$1" ;;
-        *.js ) chmod u+x "$1"; ext="node"; touchsh >> "$1" ;;
-        *.html|*.htm ) touchhtml >> "$1" ;;
+        *py ) touchpy >> "$1" ;;
+        *pl ) chmod u+x "$1"; line=4; touchpl >> "$1" ;;
+        *c ) line=4; touchc >> "$1" ;;
+        *sh|*.bash ) chmod u+x "$1"; EXT="bash"; touchsh >> "$1" ;;
+        *ksh ) chmod u+x "$1"; touchsh >> "$1" ;;
+        *csh ) chmod u+x "$1"; touchsh >> "$1" ;;
+        *awk ) chmod u+x "$1"; touchsh >> "$1" ;;
+        *js ) chmod u+x "$1"; EXT="node"; touchsh >> "$1" ;;
+        *html|*htm ) touchhtml >> "$1" ;;
         * ) return ;;
     esac
 }
