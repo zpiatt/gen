@@ -20,6 +20,12 @@
 
 version="Generate (gen) version: 1.1 - November 26, 2022"
 
+ext=$(echo "${1##*.}")
+templates=templates/template.$ext
+if [[ -f $templates ]]; then
+    template=$(cat "$templates")
+fi
+
 if [[ ! -f $templates ]]; then
 
 touchpy() { [[ "${quiet}" ]] && return
@@ -156,7 +162,7 @@ get_args() {
 
 exists() {
     if [[ -e "$1" ]]; then
-        echo "Filename already exists."; exit
+        printf "Filename already exists.\n"; exit
     else
         if ! touch "$1"; then
             usage
@@ -166,11 +172,6 @@ exists() {
 
 main() {
     get_args "$@"
-    ext=$("${1##*.}")
-    templates=templates/template.$ext
-    if [[ -f $templates ]]; then
-        template=$(cat "$templates")
-    fi
     exists "${@: -1}"
     check_ext "${@: -1}"
     [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
