@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+version="Generate (gen) version: 1.1 - November 26, 2022"
+
 ext=$(echo ${1##*.})
 templates=templates/template.$ext
 if [[ -f $templates ]]; then
@@ -26,7 +28,7 @@ fi
 
 if [[ ! -f $templates ]]; then
 
-touchpy() {
+touchpy() { [[ "${quiet}" ]] && return
 cat << EOF
 def main():
 
@@ -35,7 +37,7 @@ if __name__ == '__main__':
 EOF
 }
 
-touchpl() {
+touchpl() { [[ "${quiet}" ]] && return
 cat << EOF
 #!/usr/bin/perl
 use strict;
@@ -44,7 +46,7 @@ use warnings;
 EOF
 }
 
-touchc() {
+touchc() { [[ "${quiet}" ]] && return
 cat << EOF
 #include <stdio.h>
 
@@ -55,14 +57,14 @@ int main()
 EOF
 }
 
-touchsh() {
+touchsh() { [[ "${quiet}" ]] && return
 cat << EOF
 #!/usr/bin/env ${ext}
 
 EOF
 }
 
-touchhtml() {
+touchhtml() { [[ "${quiet}" ]] && return
 cat << EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -122,6 +124,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
 
   -e,   select editor ( gen -e nano test.txt )
   -s,   suppress auto-launch of editor
+  -q,   quiet auto-input of script template
   -h,   display this help and exit
   -v,   display version number and exit
 
@@ -134,34 +137,34 @@ exit
 check_ext() {
     case "$1" in
         *.py ) touchpy >> "$1" ;;
-        *.pl ) chmod u+x "$1"; touchpl >> "$1"; line=4 ;;
-        *.c ) touchc >> "$1"; line=4 ;;
-        *.sh|*.bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1" ;;
-        *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh  >> "$1"; ;;
-        *.csh ) chmod u+x "$1"; ext="csh"; touchsh  >> "$1"; ;;
-        *.awk ) chmod u+x "$1"; ext="awk"; touchsh  >> "$1"; ;;
-        *.js ) chmod u+x "$1"; ext="node"; touchsh >> "$1"; ;;
+        *.pl ) chmod u+x "$1"; line=4; touchpl >> "$1" ;;
+        *.c ) line=4; touchc >> "$1" ;;
+        *.sh|*.bash ) chmod u+x "$1" ext="bash"; touchsh >> "$1" ;;
+        *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh >> "$1" ;;
+        *.csh ) chmod u+x "$1"; ext="csh"; touchsh >> "$1" ;;
+        *.awk ) chmod u+x "$1"; ext="awk"; touchsh >> "$1" ;;
+        *.js ) chmod u+x "$1"; ext="node"; touchsh >> "$1" ;;
         *.html|*.htm ) touchhtml >> "$1" ;;
         * ) return ;;
     esac
 }
 
 get_args() {
-while getopts 'e:shv' OPTION; do
-    case $OPTION in
-        e) EDITOR=$OPTARG ;;
-        s) suppress="True" ;;
-        h) usage ;;
-        v) echo "${version}"; exit ;;
-        ?) usage ;;
-    esac
-done
+    while getopts 'e:shvq' OPTION; do
+        case $OPTION in
+            e) EDITOR=$OPTARG ;;
+            s) suppress="True" ;;
+            q) quiet="True" ;;
+            h) usage ;;
+            v) echo "${version}"; exit ;;
+            ?) usage ;;
+        esac
+    done
 }
 
 exists() {
     if [[ -e "$1" ]]; then
-        echo "Filename already exists."
-        exit
+        echo "Filename already exists."; exit
     else
         if ! touch "$1"; then
             usage
@@ -173,7 +176,7 @@ main() {
     get_args "$@"
     exists "${@: -1}"
     check_ext "${@: -1}"
-    [[ ! ${suppress} ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
+    [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
 }
 
 main "$@"
