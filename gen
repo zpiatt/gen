@@ -20,12 +20,6 @@
 
 version="Generate (gen) version: 1.1 - November 26, 2022"
 
-ext=$(echo ${1##*.})
-templates=templates/template.$ext
-if [[ -f $templates ]]; then
-  template=$(cat "$templates")
-fi
-
 if [[ ! -f $templates ]]; then
 
 touchpy() { [[ "${quiet}" ]] && return
@@ -154,7 +148,7 @@ get_args() {
             s) suppress="True" ;;
             q) quiet="True" ;;
             h) usage ;;
-            v) echo "${version}"; exit ;;
+            v) printf "${version}\n"; exit ;;
             ?) usage ;;
         esac
     done
@@ -172,6 +166,11 @@ exists() {
 
 main() {
     get_args "$@"
+    ext=$("${1##*.}")
+    templates=templates/template.$ext
+    if [[ -f $templates ]]; then
+        template=$(cat "$templates")
+    fi
     exists "${@: -1}"
     check_ext "${@: -1}"
     [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
