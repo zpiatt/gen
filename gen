@@ -56,6 +56,31 @@ cat << EOF
 EOF
 }
 
+touchjs() {
+cat << EOF
+#!/usr/bin/env node
+
+EOF
+}
+
+touchhtml {
+cat << EOF
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HTML 5 Boilerplate</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+	<script src="index.js"></script>
+  </body>
+</html>
+EOF
+}
+
 usage() {
 cat << EOF
 Usage: gen [OPTION]... [FILE]...
@@ -81,6 +106,7 @@ check_ext() {
         *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh  >> "$1"; ;;
         *.csh ) chmod u+x "$1"; ext="csh"; touchsh  >> "$1"; ;;
         *.awk ) chmod u+x "$1"; ext="awk"; touchsh  >> "$1"; ;;
+        *.js ) chmod u+x "$1"; ext="js"; touchjs >> "$1"; ;;
         * ) return ;;
     esac
 }
