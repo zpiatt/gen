@@ -22,7 +22,7 @@ version="Generate (gen) version: 1.1 - November 26, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATES}" ]]; then
-    template=$(cat "$TEMPLATES")
+    template="$(< "${TEMPLATES}")"
 
 touchpy() {
 cat <<[-]EOF
@@ -80,6 +80,7 @@ cat << EOF
 
 int main()
 {
+
    return 0;
 }
 EOF
@@ -109,8 +110,8 @@ cat << EOF
 </html>
 EOF
 }
-
     fi
+
 }
 
 usage() {
@@ -134,7 +135,7 @@ check_ext() {
     case "$EXT" in
         *py ) touch="py" ;;
         *pl ) chmod u+x "$FILENAME"; line=4; touch="pl" ;;
-        *c ) line=4; touch="c" ;;
+        *c ) line=5; touch="c" ;;
         *sh|*bash ) chmod u+x "$FILENAME"; EXT="bash"; ;;
         *ksh ) chmod u+x "$FILENAME" ;;
         *csh ) chmod u+x "$FILENAME" ;;
@@ -152,7 +153,7 @@ get_args() {
             s) suppress="True" ;;
             q) quiet="True" ;;
             h) usage ;;
-            v) printf "${version}\n"; exit ;;
+            v) printf "%s\n" "$version"; exit ;;
             ?) usage ;;
         esac
     done
@@ -162,7 +163,7 @@ exists() {
     if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit
     else
-        if ! touch "$FILENAME"; then
+        if ! touch "$FILENAME" 2> /dev/null; then
             usage
         fi
     fi
@@ -174,10 +175,10 @@ main() {
     TEMPLATES=templates/template.${EXT}
     get_args "$@"
     exists
-    template_check
     check_ext
-    [[ ! "${quiet}" ]] && touch${touch:-sh} >> ${FILENAME}
-    [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
+    [[ ! "${quiet}" ]] && \
+        template_check && touch"${touch:-sh}" >> "${FILENAME}"
+    [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${FILENAME}"
 }
 
 main "$@"
