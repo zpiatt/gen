@@ -18,6 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+ext=$(echo ${1##*.})
+templates=templates/template.$ext
+if [[ -f $templates ]]; then
+  template=$(cat "$templates")
+fi
+
+if [[ ! -f $templates ]]; then
+
 touchpy() {
 cat << EOF
 def main():
@@ -71,6 +79,39 @@ cat << EOF
 </html>
 EOF
 }
+
+else
+
+touchpy() {
+cat << EOF
+  ${template}
+EOF
+}
+
+touchpl() {
+cat << EOF
+  ${template}
+EOF
+}
+
+touchc() {
+cat << EOF
+  ${template}
+EOF
+}
+
+touchsh() {
+cat << EOF
+  ${template}
+EOF
+}
+
+touchhtml() {
+cat << EOF
+  ${template}
+EOF
+}
+fi
 
 version="Generate (gen) version: 1.0"
 
