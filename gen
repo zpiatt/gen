@@ -22,9 +22,7 @@ version="Generate (gen) version: 1.2 - November 26, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATES}" ]]; then
-        template="$(< "${TEMPLATES}")"
         source templates/template_main
-
     else
 
 touchpy() {
@@ -41,7 +39,6 @@ cat << EOF
 #!/usr/bin/perl
 use strict;
 use warnings;
-
 EOF
 }
 
@@ -82,7 +79,6 @@ cat << EOF
 EOF
 }
     fi
-
 }
 
 usage() {
