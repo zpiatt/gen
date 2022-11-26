@@ -32,12 +32,6 @@ EOF
 touchsh() {
 cat << EOF
 #!/usr/bin/env ${ext}
-EOF
-}
-
-touchjs() {
-cat << EOF
-#!/usr/bin/env node
 
 EOF
 }

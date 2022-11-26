@@ -45,7 +45,7 @@ check_ext() {
         *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh  >> "$1"; ;;
         *.csh ) chmod u+x "$1"; ext="csh"; touchsh  >> "$1"; ;;
         *.awk ) chmod u+x "$1"; ext="awk"; touchsh  >> "$1"; ;;
-        *.js ) chmod u+x "$1"; ext="js"; touchjs >> "$1"; ;;
+        *.js ) chmod u+x "$1"; ext="node"; touchsh >> "$1"; ;;
         *.html|*.htm ) touchhtml >> "$1" ;;
         * ) return ;;
     esac
