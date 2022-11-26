@@ -24,9 +24,9 @@ FILENAME="${@: -1}"
 EXT="${FILENAME#*.}"
 TEMPLATES=templates/template.${EXT}
 
-[[ -f "${TEMPLATES}" ]] && template=$(cat "$TEMPLATES")
-
-if [[ -f "${TEMPLATES}" ]]; then
+template_check() {
+    if [[ -f "${TEMPLATES}" ]]; then
+    template=$(cat "$TEMPLATES")
 
 touchpy() {
 cat <<[-]EOF
@@ -58,7 +58,7 @@ ${template}
 [-]EOF
 }
 
-else
+    else
 
 touchpy() { [[ "${quiet}" ]] && return
 cat << EOF
@@ -114,7 +114,8 @@ cat << EOF
 EOF
 }
 
-fi
+    fi
+}
 
 usage() {
 cat << EOF
@@ -162,19 +163,23 @@ get_args() {
 }
 
 exists() {
-    if [[ -e "$1" ]]; then
+    if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit
     else
-        if ! touch "$1"; then
+        if ! touch "$FILENAME"; then
             usage
         fi
     fi
 }
 
 main() {
+    FILENAME="${@: -1}"
+    EXT="${FILENAME#*.}"
+    TEMPLATES=templates/template.${EXT}
     get_args "$@"
-    exists "${@: -1}"
-    check_ext "${@: -1}"
+    exists
+    template_check
+    check_ext "${FILENAME}"
     [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${@: -1}"
 }
 
