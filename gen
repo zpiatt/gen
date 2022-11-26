@@ -115,8 +115,6 @@ ${template}
 }
 fi
 
-version="Generate (gen) version: 1.0"
-
 usage() {
 cat << EOF
 Usage: gen [OPTION]... [FILE]...
