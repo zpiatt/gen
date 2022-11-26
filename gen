@@ -139,7 +139,7 @@ check_ext() {
         *.py ) touchpy >> "$1" ;;
         *.pl ) chmod u+x "$1"; line=4; touchpl >> "$1" ;;
         *.c ) line=4; touchc >> "$1" ;;
-        *.sh|*.bash ) chmod u+x "$1" ext="bash"; touchsh >> "$1" ;;
+        *.sh|*.bash ) chmod u+x "$1"; ext="bash"; touchsh >> "$1" ;;
         *.ksh ) chmod u+x "$1"; ext="ksh"; touchsh >> "$1" ;;
         *.csh ) chmod u+x "$1"; ext="csh"; touchsh >> "$1" ;;
         *.awk ) chmod u+x "$1"; ext="awk"; touchsh >> "$1" ;;
