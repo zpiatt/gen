@@ -85,33 +85,33 @@ EOF
 else
 
 touchpy() {
-cat << EOF
-  ${template}
-EOF
+cat <<[-]EOF
+${template}
+[-]EOF
 }
 
 touchpl() {
-cat << EOF
-  ${template}
-EOF
+cat <<[-]EOF
+${template}
+[-]EOF
 }
 
 touchc() {
-cat << EOF
-  ${template}
-EOF
+cat <<[-]EOF
+${template}
+[-]EOF
 }
 
 touchsh() {
-cat << EOF
-  ${template}
-EOF
+cat <<[-]EOF
+${template}
+[-]EOF
 }
 
 touchhtml() {
-cat << EOF
-  ${template}
-EOF
+cat <<[-]EOF
+${template}
+[-]EOF
 }
 fi
 
