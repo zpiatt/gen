@@ -17,3 +17,24 @@ Upcoming features:
  Please send me any ideas for increasing portability, adding scripting languages or features!
 
 ![](https://github.com/membersincewayback/gen/blob/main/gen_v1.0.gif)
+
+## Installing
+run install script:
+_Requires `git`, `sudo` and `curl`_
+```bash
+curl -sSL https://raw.githubusercontent.com/membersincewayback/gen/main/install | bash
+```
+ **This will install and symlink script from `$HOME/.gen`**
+
+Now you can use `gen [options]` globally.
+
+Content of install script: [gen/main/install](https://raw.githubusercontent.com/membersincewayback/gen/main/install)
+
+## Update
+
+Run: `cd $HOME/.gen && git pull`
+
+## Uninstall
+
+Run: `cd $HOME/.gen && ./install uninstall`
+This will delete `$HOME/.gen` and symlink in `/usr/bin/gen`

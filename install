@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+echo -e "\e[1mUSAGE: run install to install and install uninstall to uninstall.\e[0m"
+
+install_dir="${HOME}"/.gen
+
+install() {
+	if [[ ! -d  ${install_dir} ]]; then
+		mkdir -p "${install_dir}"
+		git clone https://github.com/membersincewayback/gen.git "${install_dir}"
+	fi
+	sudo ln -s "${install_dir}"/gen /usr/bin/gen
+	chmod +x "${install_dir}"/gen
+	chmod +x "${install_dir}"/install
+}
+
+uninstall() {
+	sudo rm -r /usr/bin/gen
+	rm -rf "${install_dir}"
+}
+
+if [[ "$1" == "uninstall" ]]; then
+	uninstall
+else
+	install
+fi
