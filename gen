@@ -63,7 +63,7 @@ cat << EOF
 EOF
 }
 
-touchhtml {
+touchhtml() {
 cat << EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -107,6 +107,7 @@ check_ext() {
         *.csh ) chmod u+x "$1"; ext="csh"; touchsh  >> "$1"; ;;
         *.awk ) chmod u+x "$1"; ext="awk"; touchsh  >> "$1"; ;;
         *.js ) chmod u+x "$1"; ext="js"; touchjs >> "$1"; ;;
+        *.html|*.htm ) touchhtml >> "$1" ;;
         * ) return ;;
     esac
 }
