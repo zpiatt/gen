@@ -136,13 +136,13 @@ check_ext() {
         *py ) touch="py" ;;
         *pl ) chmod u+x "$FILENAME"; line=4; touch="pl" ;;
         *c ) line=5; touch="c" ;;
-        *sh|*bash ) chmod u+x "$FILENAME"; EXT="bash"; ;;
         *ksh ) chmod u+x "$FILENAME" ;;
         *csh ) chmod u+x "$FILENAME" ;;
+        *sh ) chmod u+x "$FILENAME"; EXT="bash"; ;;
         *awk ) chmod u+x "$FILENAME" ;;
         *js ) chmod u+x "$FILENAME"; EXT="node"; touch="js" ;;
         *html|*htm ) touch="html" ;;
-        * ) quiet="True"; return ;;
+        * ) quiet=true; return ;;
     esac
 }
 
@@ -150,8 +150,8 @@ get_args() {
     while getopts 'e:shvq' OPTION; do
         case $OPTION in
             e) EDITOR=$OPTARG ;;
-            s) suppress="True" ;;
-            q) quiet="True" ;;
+            s) suppress=true ;;
+            q) quiet=true ;;
             h) usage ;;
             v) printf "%s\n" "$version"; exit ;;
             ?) usage ;;
@@ -170,7 +170,7 @@ exists() {
 }
 
 main() {
-    FILENAME="${@: -1}"
+    FILENAME="${!#}"
     EXT="${FILENAME#*.}"
     TEMPLATES=templates/template.${EXT}
     get_args "$@"
