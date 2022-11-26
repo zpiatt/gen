@@ -1,14 +1,15 @@
 # gen
 Generate (gen) is a command line tool to automate creation of script files, modification of file permissions, and input default script template.
-  Version 1.1 - Nov. 26, 2022
+  Version 1.2 - Nov. 26, 2022
 
 Upcoming features:
-  - Handle expansions ( gen test{00..10}.txt )
+  - Expanded support for templates
+  - Improve install script
+  - Expanded documentation/wiki
 
  Recently added:
-  - "-e" now allows selection of editor ( gen -e emacs test.txt )
-  - "-s" now suppresses editor launch ( gen -s test.txt )
-  - "-q" to quiet auto-input of script templates.
+  - Preliminary install script
+  - Template directory and support for custom templates
 
 ![](https://github.com/membersincewayback/gen/blob/main/gen_v1.0.gif)
 

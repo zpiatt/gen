@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.1 - November 26, 2022"
+version="Generate (gen) version: 1.2 - November 26, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATES}" ]]; then
@@ -104,16 +104,16 @@ exit
 
 check_ext() {
     case "$EXT" in
-        *py ) touch="py" ;;
-        *pl ) chmod u+x "$FILENAME"; line=4; touch="pl" ;;
-        *c ) line=5; touch="c" ;;
-        *ksh ) chmod u+x "$FILENAME" ;;
-        *csh ) chmod u+x "$FILENAME" ;;
-        *sh ) chmod u+x "$FILENAME"; EXT="bash"; ;;
-        *awk ) chmod u+x "$FILENAME" ;;
-        *js ) chmod u+x "$FILENAME"; EXT="node"; touch="js" ;;
-        *html|*htm ) touch="html" ;;
-        * ) quiet=true; return ;;
+        *c) touch="c" ;;
+        *py) touch="py" ;;
+        *html|*htm) touch="html" ;;
+        *awk) chmod u+x "$FILENAME" ;;
+        *ksh) chmod u+x "$FILENAME" ;;
+        *csh) chmod u+x "$FILENAME" ;;
+        *sh) chmod u+x "$FILENAME"; EXT="bash"; ;;
+        *pl) chmod u+x "$FILENAME"; touch="pl" ;;
+        *js) chmod u+x "$FILENAME"; EXT="node"; touch="js" ;;
+        *) quiet=true; return ;;
     esac
 }
 
@@ -149,7 +149,7 @@ main() {
     check_ext
     [[ ! "${quiet}" ]] && \
         template_check && touch"${touch:-sh}" >> "${FILENAME}"
-    [[ ! "${suppress}" ]] && ${EDITOR:-vi} +"${line:-2}" "${FILENAME}"
+    [[ ! "${suppress}" ]] && "${EDITOR:-vi}" "${FILENAME}"
 }
 
 main "$@"
