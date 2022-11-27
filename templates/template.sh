@@ -1,3 +1,3 @@
 #!/usr/bin/env ${EXT}
 
-this is a test of templates
+This is an example template.

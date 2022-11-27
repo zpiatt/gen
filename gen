@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Generate: A command-line script file generation tool written in bash 5.2+.
+# Generate: A command-line script file generation tool written in bash 3.2+.
 # https://github.com/membersincewayback/gen
 #
 # Copyright (C) 2022 Zac Piatt
@@ -22,10 +22,18 @@ version="Generate (gen) version: 1.2 - November 26, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATES}" ]]; then
-        source templates/template_main
+        template="$(< "${TEMPLATES}")"
+        format="template"
+
+gentemplate() {
+cat <<[-]EOF
+${template}
+[-]EOF
+}
+
     else
 
-touchpy() {
+genpy() {
 cat << EOF
 def main():
 
@@ -34,15 +42,16 @@ if __name__ == '__main__':
 EOF
 }
 
-touchpl() {
+genpl() {
 cat << EOF
 #!/usr/bin/perl
 use strict;
 use warnings;
+
 EOF
 }
 
-touchc() {
+genc() {
 cat << EOF
 #include <stdio.h>
 
@@ -54,14 +63,14 @@ int main()
 EOF
 }
 
-touchsh() {
+gensh() {
 cat << EOF
 #!/usr/bin/env ${EXT}
 
 EOF
 }
 
-touchhtml() {
+genhtml() {
 cat << EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -79,6 +88,7 @@ cat << EOF
 EOF
 }
     fi
+
 }
 
 usage() {
@@ -100,15 +110,15 @@ exit
 
 check_ext() {
     case "$EXT" in
-        *c) touch="c" ;;
-        *py) touch="py" ;;
-        *html|*htm) touch="html" ;;
+        *c) format="c" ;;
+        *py) format="py" ;;
+        *html|*htm) format="html" ;;
         *awk) chmod u+x "$FILENAME" ;;
         *ksh) chmod u+x "$FILENAME" ;;
         *csh) chmod u+x "$FILENAME" ;;
         *sh) chmod u+x "$FILENAME"; EXT="bash"; ;;
-        *pl) chmod u+x "$FILENAME"; touch="pl" ;;
-        *js) chmod u+x "$FILENAME"; EXT="node"; touch="js" ;;
+        *pl) chmod u+x "$FILENAME"; format="pl" ;;
+        *js) chmod u+x "$FILENAME"; EXT="node"; format="js" ;;
         *) quiet=true; return ;;
     esac
 }
@@ -144,7 +154,7 @@ main() {
     exists
     check_ext
     [[ ! "${quiet}" ]] && \
-        template_check && touch"${touch:-sh}" >> "${FILENAME}"
+        template_check && gen"${format:-sh}" >> "${FILENAME}"
     [[ ! "${suppress}" ]] && "${EDITOR:-vi}" "${FILENAME}"
 }
 
