@@ -20,4 +20,4 @@ Upcoming features:
 
 ### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\] \[[A quick note about editors](https://github.com/membersincewayback/gen/wiki/Editors)\]
 
-![](https://github.com/membersincewayback/gen/blob/main/gen_v1.0.gif)
+![gen](https://i.imgur.com/8vJCqwB.gif)
