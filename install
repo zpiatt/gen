@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\e[1mUSAGE: run install to install and install uninstall to uninstall.\e[0m"
+printf "Generate (gen) v1.2 installer.\n"
 
 TARGET_DIR="${HOME}"/.gen
 
