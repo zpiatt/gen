@@ -25,7 +25,7 @@ template_check() {
         template="$(< "${TEMPLATES}")"
         format="template"
 
-gentemplate() {
+gen_template() {
 cat <<[-]EOF
 ${template}
 [-]EOF
@@ -33,7 +33,7 @@ ${template}
 
     else
 
-genpy() {
+gen_py() {
 cat << EOF
 def main():
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 EOF
 }
 
-genpl() {
+gen_pl() {
 cat << EOF
 #!/usr/bin/perl
 use strict;
@@ -51,7 +51,7 @@ use warnings;
 EOF
 }
 
-genc() {
+gen_c() {
 cat << EOF
 #include <stdio.h>
 
@@ -63,14 +63,14 @@ int main()
 EOF
 }
 
-gensh() {
+gen_sh() {
 cat << EOF
 #!/usr/bin/env ${EXT}
 
 EOF
 }
 
-genhtml() {
+gen_html() {
 cat << EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -153,7 +153,7 @@ main() {
     exists
     check_ext
     [[ ! "${quiet}" ]] && \
-        template_check && gen"${format:-sh}" >> "${FILENAME}"
+        template_check && gen_"${format:-sh}" >> "${FILENAME}"
     [[ ! "${suppress}" ]] && "${EDITOR:-vi}" "${FILENAME}"
 }
 
