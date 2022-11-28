@@ -122,7 +122,7 @@ check_ext() {
     esac
 }
 
-exists() {
+create_file() {
     if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit 1
     else
@@ -151,7 +151,7 @@ main() {
     EXT="${FILENAME#*.}"
     TEMPLATES="templates/template.${EXT}"
     get_args "$@"
-    exists
+    create_file
     check_ext
     [[ ! "${quiet}" ]] && \
         template_check && gen_"${format:-sh}" >> "${FILENAME}"
