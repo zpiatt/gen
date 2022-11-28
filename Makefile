@@ -1,7 +1,7 @@
 PREFIX = /usr
 
 all:
-	@echo Run \'make install\' to install Gen.
+	@printf "Run 'make install' to install Gen.\n"
 
 install:
 	@mkdir -p $(DESTDIR)$(PREFIX)/bin
