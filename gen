@@ -88,7 +88,6 @@ cat << EOF
 EOF
 }
     fi
-
 }
 
 usage() {
@@ -96,11 +95,11 @@ cat << EOF
 Usage: gen [OPTION]... [FILE]...
 Generate FILE, auto-input typical text, and auto-launch default editor.
 
-  -e,   select editor ( gen -e nano test.txt )
-  -s,   suppress auto-launch of editor
   -q,   quiet auto-input of script template
-  -h,   display this help and exit
+  -s,   suppress auto-launch of editor
+  -e,   select editor ( gen -e nano test.txt )
   -v,   display version number and exit
+  -h,   display this help and exit
 
 Full documentation <https://github.com/membersincewayback/gen>
 ${version}
@@ -123,19 +122,6 @@ check_ext() {
     esac
 }
 
-get_args() {
-    while getopts 'e:shvq' OPTION; do
-        case $OPTION in
-            e) EDITOR=$OPTARG ;;
-            s) suppress=true ;;
-            q) quiet=true ;;
-            h) usage ;;
-            v) printf "%s\n" "$version"; exit ;;
-            ?) usage ;;
-        esac
-    done
-}
-
 exists() {
     if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit
@@ -146,10 +132,23 @@ exists() {
     fi
 }
 
+get_args() {
+    while getopts 'qse:vh' OPTION; do
+        case $OPTION in
+            q) quiet=true ;;
+            s) suppress=true ;;
+            e) EDITOR=$OPTARG ;;
+            v) printf "%s\n" "$version"; exit ;;
+            h) usage ;;
+            ?) usage ;;
+        esac
+    done
+}
+
 main() {
     FILENAME="${!#}"
     EXT="${FILENAME#*.}"
-    TEMPLATES=templates/template.${EXT}
+    TEMPLATES="templates/template.${EXT}"
     get_args "$@"
     exists
     check_ext
