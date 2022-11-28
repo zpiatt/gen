@@ -8,8 +8,6 @@
 
 Generate (gen) is a command line script automation tool written in `bash 3.2+`. Generate automates the creation of script files, modifies file permissions, and inputs script templates seemlessly.
 
-<img src="https://i.imgur.com/8vJCqwB.gif" alt="gen" align="right" height="340px">
-
 Upcoming features:
   - Expanded support for templates
   - Add -u to update gen
@@ -23,3 +21,5 @@ Upcoming features:
  Please send me any ideas for increasing portability, adding scripting languages or features!
 
 ### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\] \[[Editors](https://github.com/membersincewayback/gen/wiki/Editors)\]
+
+<img src="https://i.imgur.com/8vJCqwB.gif" alt="gen" align="left" height="500px">
