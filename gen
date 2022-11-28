@@ -104,7 +104,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
 Full documentation <https://github.com/membersincewayback/gen>
 ${version}
 EOF
-exit $1
+exit "$1"
 }
 
 check_ext() {
