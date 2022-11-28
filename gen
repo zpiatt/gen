@@ -126,8 +126,8 @@ create_file() {
     if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit 1
     else
-        if ! touch "$FILENAME" 2> /dev/null; then
-            printf "Error: Couldn't touch \"$FILENAME\"\n\n" 
+        if ! touch "$FILENAME"; then
+            printf "\n" 
             usage 1
         fi
     fi
