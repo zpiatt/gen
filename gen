@@ -90,18 +90,17 @@ EOF
 
 gen_jsx() {
 BASENAME_NO_EXT=${FILENAME##*/}
-BASENAME_NO_EXT=${BASENAME_NO_EXT%.*}
 cat << EOF
 import React from 'react';
 
-function ${BASENAME_NO_EXT}() {
+function ${BASENAME_NO_EXT%.*}() {
   return (
     <>
     </>
   );
 }
 
-export default ${BASENAME_NO_EXT};
+export default ${BASENAME_NO_EXT%.*};
 EOF
 }
     fi
