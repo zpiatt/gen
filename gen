@@ -89,7 +89,7 @@ EOF
 }
 
 gen_jsx() {
-BASENAME_NO_EXT=${FILENAME##*/}
+BASENAME_NO_EXT="${FILENAME##*/}"
 cat << EOF
 import React from 'react';
 
