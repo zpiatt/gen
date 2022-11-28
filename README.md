@@ -3,7 +3,7 @@
 
 <p align="left">
 <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/membersincewayback/gen"></a>
-<a href="https://github.com/membersincewayback/releases"><img src="https://img.shields.io/github/v/release/membersincewayback/gen">
+<a href="https://github.com/membersincewayback/gen/releases"><img src="https://img.shields.io/github/v/release/membersincewayback/gen">
 </p>
 
 Generate (gen) is a command line script automation tool written in `bash 3.2+`. Generate automates the creation of script files, modifies file permissions, and inputs script templates seemlessly.
