@@ -87,6 +87,22 @@ cat << EOF
 </html>
 EOF
 }
+
+gen_jsx() {
+BASENAME_NO_EXT="${FILENAME##*/}"
+cat << EOF
+import React from 'react';
+
+function ${BASENAME_NO_EXT%.*}() {
+  return (
+    <>
+    </>
+  );
+}
+
+export default ${BASENAME_NO_EXT%.*};
+EOF
+}
     fi
 }
 
@@ -111,6 +127,7 @@ check_ext() {
     case "$EXT" in
         *c) format="c" ;;
         *py) format="py" ;;
+        *jsx) format="jsx" ;;
         *html|*htm) format="html" ;;
         *awk) chmod u+x "$FILENAME" ;;
         *ksh) chmod u+x "$FILENAME" ;;
