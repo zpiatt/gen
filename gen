@@ -104,7 +104,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
 Full documentation <https://github.com/membersincewayback/gen>
 ${version}
 EOF
-exit
+exit "$1"
 }
 
 check_ext() {
@@ -122,12 +122,13 @@ check_ext() {
     esac
 }
 
-exists() {
+create_file() {
     if [[ -e "$FILENAME" ]]; then
-        printf "Filename already exists.\n"; exit
+        printf "Filename already exists.\n"; exit 1
     else
-        if ! touch "$FILENAME" 2> /dev/null; then
-            usage
+        if ! touch "$FILENAME"; then
+            printf "\n" 
+            usage 1
         fi
     fi
 }
@@ -150,7 +151,7 @@ main() {
     EXT="${FILENAME#*.}"
     TEMPLATES="templates/template.${EXT}"
     get_args "$@"
-    exists
+    create_file
     check_ext
     [[ ! "${quiet}" ]] && \
         template_check && gen_"${format:-sh}" >> "${FILENAME}"
