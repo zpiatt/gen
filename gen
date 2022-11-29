@@ -120,7 +120,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
 Full documentation <https://github.com/membersincewayback/gen>
 ${version}
 EOF
-exit "$1"
+exit $1
 }
 
 check_ext() {
@@ -144,7 +144,7 @@ create_file() {
         printf "Filename already exists.\n"; exit 1
     else
         if ! touch "$FILENAME"; then
-            printf "\n" 
+            printf "\n"
             usage 1
         fi
     fi
@@ -152,10 +152,10 @@ create_file() {
 
 get_args() {
     while getopts 'qse:vh' OPTION; do
-        case $OPTION in
+        case "$OPTION" in
             q) quiet=true ;;
             s) suppress=true ;;
-            e) EDITOR=$OPTARG ;;
+            e) EDITOR="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit ;;
             h) usage ;;
             ?) usage ;;
