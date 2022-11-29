@@ -14,10 +14,10 @@ Upcoming features:
 
  Recently added:
   - Makefile install script "borrowed" from \[[Neofetch](https://github.com/dylanaraps/neofetch)\]
-  - Added Template directory and support for custom templates to Makefile installation
+  - Added template directory and support for custom templates to Makefile installation
 
  Please send me any ideas for increasing portability, adding scripting languages or features!
 
-### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Templates](https://github.com/membersincewayback/gen/wiki/Templates)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\]
+### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Templates](https://github.com/membersincewayback/gen/wiki/Templates)\] \[[Editors](https://github.com/membersincewayback/gen/wiki/Editors)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\]
 
 <img src="https://i.imgur.com/8vJCqwB.gif" alt="gen" align="left" height="500px">
