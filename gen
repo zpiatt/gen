@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.3 - November 29, 2022"
+version="Generate (gen) version: 1.3.1 - November 29, 2022"
 
 template_check() {
     if [[ -f "${TEMPLATE_FILE}" ]]; then
@@ -125,17 +125,17 @@ exit 0
 
 check_ext() {
     case "$EXT" in
+        *awk) exe=true ;;
+        *ksh) exe=true ;;
+        *csh) exe=true ;;
         *c) format="c" ;;
         *py) format="py" ;;
         *jsx) format="jsx" ;;
         *html|*htm) format="html" ;;
-        *awk) chmod u+x "$FILENAME" ;;
-        *ksh) chmod u+x "$FILENAME" ;;
-        *csh) chmod u+x "$FILENAME" ;;
-        *sh) chmod u+x "$FILENAME"; EXT="bash"; ;;
-        *pl) chmod u+x "$FILENAME"; format="pl" ;;
-        *js) chmod u+x "$FILENAME"; EXT="node" ;;
-        *) quiet=true ;;
+        *sh) exe=true; EXT="bash"; ;;
+        *pl) exe=true; format="pl" ;;
+        *js) exe=true; EXT="node" ;;
+        *) [[ ! -f "${TEMPLATE_FILE}" ]] && quiet=true ;;
     esac
 }
 
@@ -150,11 +150,13 @@ create_file() {
 }
 
 get_args() {
-    while getopts 'qse:vh' OPTION; do
+    while getopts 'xqsed:vh' OPTION; do
         case "$OPTION" in
+            x) exe=true ;;
             q) quiet=true ;;
             s) suppress=true ;;
             e) EDITOR="$OPTARG" ;;
+            d) unset TEMPLATE_FILE ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             h) usage ;;
             ?) printf "Try 'gen -h' for more information.\n"; exit 1 ;;
@@ -169,6 +171,7 @@ main() {
     get_args "$@"
     create_file
     check_ext
+    [[ "${exe}" ]] && chmod u+x "${FILENAME}"
     [[ ! "${quiet}" ]] && \
         template_check && gen_"${format:-sh}" >> "${FILENAME}"
     [[ ! "${suppress}" ]] && \
