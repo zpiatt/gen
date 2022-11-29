@@ -111,9 +111,11 @@ cat << EOF
 Usage: gen [OPTION]... [FILE]...
 Generate FILE, auto-input typical text, and auto-launch default editor.
 
+  -x,   make file executable regardless of default
   -q,   quiet auto-input of script template
   -s,   suppress auto-launch of editor
   -e,   select editor ( gen -e nano test.txt )
+  -d,   force default template when custom available
   -v,   display version number and exit
   -h,   display this help and exit
 
@@ -150,7 +152,7 @@ create_file() {
 }
 
 get_args() {
-    while getopts 'xqsed:vh' OPTION; do
+    while getopts 'xqse:dvh' OPTION; do
         case "$OPTION" in
             x) exe=true ;;
             q) quiet=true ;;
