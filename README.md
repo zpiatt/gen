@@ -21,4 +21,4 @@ Upcoming features:
 
 ### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Templates](https://github.com/membersincewayback/gen/wiki/Templates)\] \[[Editors](https://github.com/membersincewayback/gen/wiki/Editors)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\]
 
-<img src="https://i.imgur.com/8vJCqwB.gif" alt="gen" align="left" height="500px">
+<img src="https://i.imgur.com/ciStms5.gif" alt="gen" align="left" height="500px">
