@@ -18,14 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.2.1-beta - November 27, 2022"
+version="Generate (gen) version: 1.2.2-beta - November 27, 2022"
 
 template_check() {
-    if [[ -f "${TEMPLATES}" ]]; then
-        template="$(< "${TEMPLATES}")"
-        format="template"
+    if [[ -f "${TEMPLATE_FILE}" ]]; then
+        template="$(< "${TEMPLATE_FILE}")"
+        format="templates"
 
-gen_template() {
+gen_templates() {
 cat <<[-]EOF
 ${template}
 [-]EOF
@@ -89,18 +89,18 @@ EOF
 }
 
 gen_jsx() {
-BASENAME_NO_EXT="${FILENAME##*/}"
+    BASENAME="${FILENAME##*/}"
 cat << EOF
 import React from 'react';
 
-function ${BASENAME_NO_EXT%.*}() {
+function ${BASENAME%.*}() {
   return (
     <>
     </>
   );
 }
 
-export default ${BASENAME_NO_EXT%.*};
+export default ${BASENAME%.*};
 EOF
 }
     fi
@@ -120,7 +120,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
 Full documentation <https://github.com/membersincewayback/gen>
 ${version}
 EOF
-exit "$1"
+exit 0
 }
 
 check_ext() {
@@ -135,7 +135,7 @@ check_ext() {
         *sh) chmod u+x "$FILENAME"; EXT="bash"; ;;
         *pl) chmod u+x "$FILENAME"; format="pl" ;;
         *js) chmod u+x "$FILENAME"; EXT="node"; format="js" ;;
-        *) quiet=true; return ;;
+        *) quiet=true ;;
     esac
 }
 
@@ -143,8 +143,8 @@ create_file() {
     if [[ -e "$FILENAME" ]]; then
         printf "Filename already exists.\n"; exit 1
     else
-        if ! touch "$FILENAME"; then
-            usage 1
+        if ! touch "$FILENAME" 2> /dev/null; then
+            printf "Failed to create %s.\n" "$FILENAME"; exit 1
         fi
     fi
 }
@@ -156,8 +156,8 @@ get_args() {
             s) suppress=true ;;
             e) EDITOR="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
-            h) usage 0 ;;
-            ?) usage 1 ;;
+            h) usage ;;
+            ?) printf "Try 'gen -h' for more information.\n"; exit 1 ;;
         esac
     done
 }
@@ -165,13 +165,17 @@ get_args() {
 main() {
     FILENAME="${!#}"
     EXT="${FILENAME#*.}"
-    TEMPLATES="templates/template.${EXT}"
+    TEMPLATE_FILE="templates/template.${EXT}"
     get_args "$@"
     create_file
     check_ext
     [[ ! "${quiet}" ]] && \
         template_check && gen_"${format:-sh}" >> "${FILENAME}"
-    [[ ! "${suppress}" ]] && "${EDITOR:-vi}" "${FILENAME}"
+    [[ ! "${suppress}" ]] && \
+        if ! "${EDITOR:-vi}" "${FILENAME}" 2> /dev/null; then
+            printf "Failed to launch editor.\n"
+            printf "Try 'gen -h' for more information.\n"; exit 1
+        fi
 }
 
 main "$@"
