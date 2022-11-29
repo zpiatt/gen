@@ -134,7 +134,7 @@ check_ext() {
         *csh) chmod u+x "$FILENAME" ;;
         *sh) chmod u+x "$FILENAME"; EXT="bash"; ;;
         *pl) chmod u+x "$FILENAME"; format="pl" ;;
-        *js) chmod u+x "$FILENAME"; EXT="node"; format="js" ;;
+        *js) chmod u+x "$FILENAME"; EXT="node" ;;
         *) quiet=true ;;
     esac
 }
