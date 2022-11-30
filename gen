@@ -134,7 +134,7 @@ check_ext() {
         *py) format="py" ;;
         *jsx) format="jsx" ;;
         *html|*htm) format="html" ;;
-        *sh) exe=true; EXT="bash"; ;;
+        *sh) exe=true; EXT="bash" ;;
         *pl) exe=true; format="pl" ;;
         *js) exe=true; EXT="node" ;;
         *) [[ ! -f "${TEMPLATE_FILE}" ]] && quiet=true ;;
@@ -168,8 +168,9 @@ get_args() {
 
 main() {
     FILENAME="${!#}"
-    EXT="${FILENAME#*.}"
-    TEMPLATE_FILE="${HOME}/.gen/templates/template.${EXT}"
+    [[ ! -z "${FILENAME#*.}" ]] && EXT="${FILENAME#*.}"
+    [[ -f "${HOME}/.gen/templates/template.${EXT}" ]] && \
+        TEMPLATE_FILE="${HOME}/.gen/templates/template.${EXT}"
     get_args "$@"
     create_file
     check_ext
