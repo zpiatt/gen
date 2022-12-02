@@ -168,7 +168,7 @@ get_args() {
 main() {
     FILENAME="${!#}"
     BASENAME="${FILENAME##*/}"
-    [[ -n "${FILENAME#*.}" ]] && EXT="${FILENAME#*.}"
+    [[ -n "${FILENAME##*.}" ]] && EXT="${FILENAME##*.}"
     [[ -f "${HOME}/.gen/templates/template.${EXT}" ]] && \
         TEMPLATE_FILE="${HOME}/.gen/templates/template.${EXT}"
     get_args "$@"
