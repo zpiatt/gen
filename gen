@@ -184,4 +184,9 @@ main() {
         fi
 }
 
-main "$@"
+if [[ "$#" -eq 0 ]]; then
+    printf "Must provide filename to generate.\n"
+    printf "Try 'gen -h' for more information.\n"; exit 1
+else
+    main "$@"
+fi
