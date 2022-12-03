@@ -199,8 +199,8 @@ main() {
     check_ext
     create_file
     [[ "${exe:-}" ]] && chmod u+x "${filename}"
-    [[ ! "${quiet:-}" ]] && echo_text
-    [[ ! "${suppress:-}" ]] && launch_ed
+    [[ -z "${quiet:-}" ]] && echo_text
+    [[ -z "${suppress:-}" ]] && launch_ed
 }
 
 if [[ "$#" -eq 0 ]]; then
