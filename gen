@@ -21,7 +21,7 @@
 version="Generate (gen) version: 1.4.0 - December 3, 2022"
 
 get_template() {
-    if [[ -f "${template_file:-}" ]]; then
+    if [[ -n "${template_file:-}" ]]; then
         template="$(< "${template_file}")"
         format="templates"
 
@@ -157,7 +157,7 @@ check_ext() {
         *js) exe=true; ext="node" ;;
         *py) exe=true; format="py" ;;
         *pl) exe=true; format="pl" ;;
-        *) [[ ! -f "${template_file:-}" ]] && quiet=true ;;
+        *) [[ -z "${template_file:-}" ]] && quiet=true ;;
     esac
 }
 
@@ -194,7 +194,7 @@ main() {
     filename="${!#}"
     basename="${filename##*/}"
     get_ext
-    check_template
+    [[ -n "${ext}" ]] && check_template
     get_args "$@"
     check_ext
     create_file
