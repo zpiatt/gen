@@ -177,10 +177,8 @@ get_args() {
 }
 
 check_template() {
-    if [[ -n "${ext}" ]]; then
-        [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
-            template_file="${HOME}/.gen/templates/template.${ext}"
-    fi
+    [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
+        template_file="${HOME}/.gen/templates/template.${ext}"
 }
 
 get_ext() {
