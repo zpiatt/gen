@@ -18,10 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.4.0 - December 3, 2022"
+version="Generate (gen) version: 1.4.1 - December 3, 2022"
 
 get_template() {
-    if [[ -f "${template_file:-}" ]]; then
+    if [[ -n "${template_file:-}" ]]; then
         template="$(< "${template_file}")"
         format="templates"
 
@@ -147,17 +147,17 @@ create_file() {
 
 check_ext() {
     case "$ext" in
-        *awk) exe=true ;;
-        *ksh) exe=true ;;
-        *csh) exe=true ;;
-        *c) format="c" ;;
-        *jsx) format="jsx" ;;
-        *html|*htm) format="html" ;;
-        *sh) exe=true; ext="bash" ;;
-        *js) exe=true; ext="node" ;;
-        *py) exe=true; format="py" ;;
-        *pl) exe=true; format="pl" ;;
-        *) [[ ! -f "${template_file:-}" ]] && quiet=true ;;
+        awk) exe=true ;;
+        ksh) exe=true ;;
+        csh) exe=true ;;
+        c) format="c" ;;
+        jsx) format="jsx" ;;
+        html|htm) format="html" ;;
+        sh|bash) exe=true; ext="bash" ;;
+        js) exe=true; ext="node" ;;
+        py) exe=true; format="py" ;;
+        pl) exe=true; format="pl" ;;
+        *) [[ -z "${template_file:-}" ]] && quiet=true ;;
     esac
 }
 
@@ -177,10 +177,8 @@ get_args() {
 }
 
 check_template() {
-    if [[ -n "${ext}" ]]; then
-        [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
-            template_file="${HOME}/.gen/templates/template.${ext}"
-    fi
+    [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
+        template_file="${HOME}/.gen/templates/template.${ext}"
 }
 
 get_ext() {
@@ -194,7 +192,7 @@ main() {
     filename="${!#}"
     basename="${filename##*/}"
     get_ext
-    check_template
+    [[ -n "${ext}" ]] && check_template
     get_args "$@"
     check_ext
     create_file
