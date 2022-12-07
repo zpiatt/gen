@@ -184,7 +184,7 @@ check_template() {
 get_ext() {
     case "${filename}" in
         *.*) ext="${filename##*.}" ;;
-        *) ext=""
+        *) ext="" ;;
     esac
 }
 
@@ -196,7 +196,7 @@ main() {
     get_args "$@"
     check_ext
     create_file
-    [[ "${exe:-}" ]] && chmod u+x "${filename}"
+    [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
     [[ -z "${quiet:-}" ]] && echo_text
     [[ -z "${suppress:-}" ]] && launch_ed
 }
