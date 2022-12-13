@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.4.1 - December 3, 2022"
+version="Generate (gen) version: 1.4.2 - December 12, 2022"
 
 get_template() {
     if [[ -n "${template_file:-}" ]]; then
@@ -153,27 +153,32 @@ check_ext() {
         c) format="c" ;;
         jsx) format="jsx" ;;
         html|htm) format="html" ;;
-        sh|bash) exe=true; ext="bash" ;;
         js) exe=true; ext="node" ;;
         py) exe=true; format="py" ;;
         pl) exe=true; format="pl" ;;
+        sh|bash) exe=true; ext="bash" ;;
         *) [[ -z "${template_file:-}" ]] && quiet=true ;;
     esac
 }
 
 get_args() {
-    while getopts 'xqse:dvh' option; do
+    while getopts ':hxqdse:v' option; do
         case "$option" in
             h) usage ;;
             x) exe=true ;;
             q) quiet=true ;;
+            d) default=true ;;
             s) suppress=true ;;
             e) EDITOR="$OPTARG" ;;
-            d) unset template_file ;;
             v) printf "%s\n" "$version"; exit 0 ;;
-            ?) printf "Try 'gen -h' for more information.\n"; exit 1 ;;
+            ?)
+                printf "gen: invalid option -- '%s'\n" "$OPTARG"
+                printf "Try 'gen -h' for more information.\n"
+                exit 1
+            ;;
         esac
     done
+    filename="${1}"
 }
 
 check_template() {
@@ -189,11 +194,10 @@ get_ext() {
 }
 
 main() {
-    filename="${!#}"
+    get_args "$@"
     basename="${filename##*/}"
     get_ext
-    [[ -n "${ext}" ]] && check_template
-    get_args "$@"
+    [[ -n "${ext}" ]] && [[ -z "${default:-}" ]] && check_template
     check_ext
     create_file
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
