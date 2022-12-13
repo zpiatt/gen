@@ -20,7 +20,7 @@
 
 version="Generate (gen) version: 1.4.2 - December 12, 2022"
 
-get_template() {
+which_template() {
     if [[ -n "${template_file:-}" ]]; then
         template="$(< "${template_file}")"
         format="templates"
@@ -131,7 +131,7 @@ launch_ed() {
 }
 
 echo_text() {
-    get_template
+    which_template
     gen_"${format:-sh}" >> "${filename}"
 }
 
@@ -161,6 +161,12 @@ check_ext() {
     esac
 }
 
+get_template() {
+    [[ "${filename}" == *.* ]] && ext="${filename##*.}"
+    [[ -f "${HOME}/.gen/templates/template.${ext:-}" ]] && \
+        template_file="${HOME}/.gen/templates/template.${ext}"
+}
+
 get_args() {
     while getopts ':hxqdse:v' option; do
         case "$option" in
@@ -178,27 +184,14 @@ get_args() {
             ;;
         esac
     done
-    shift "$(($OPTIND -1))"
+    shift "$((OPTIND -1))"
     filename="${1}"
-}
-
-check_template() {
-    [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
-        template_file="${HOME}/.gen/templates/template.${ext}"
-}
-
-get_ext() {
-    case "${filename}" in
-        *.*) ext="${filename##*.}" ;;
-        *) ext="" ;;
-    esac
 }
 
 main() {
     get_args "$@"
     basename="${filename##*/}"
-    get_ext
-    [[ -n "${ext}" ]] && [[ -z "${default:-}" ]] && check_template
+    [[ -z "${default:-}" ]] && get_template
     check_ext
     create_file
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
