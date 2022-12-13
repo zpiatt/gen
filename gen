@@ -178,6 +178,7 @@ get_args() {
             ;;
         esac
     done
+    shift "$(($OPTIND -1))"
     filename="${1}"
 }
 
