@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.4.2 - December 12, 2022"
+version="Generate (gen) version: 1.4.3 - December 14, 2022"
 
 which_template() {
     if [[ -n "${template_file:-}" ]]; then
@@ -54,11 +54,12 @@ EOF
 gen_c() {
 cat << EOF
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
 
-   return 0;
+    return 0;
 }
 EOF
 }
@@ -66,6 +67,7 @@ EOF
 gen_sh() {
 cat << EOF
 #!/usr/bin/env ${ext}
+
 EOF
 }
 
@@ -162,7 +164,6 @@ check_ext() {
 }
 
 get_template() {
-    [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -f "${HOME}/.gen/templates/template.${ext:-}" ]] && \
         template_file="${HOME}/.gen/templates/template.${ext}"
 }
@@ -191,6 +192,7 @@ get_args() {
 main() {
     get_args "$@"
     basename="${filename##*/}"
+    [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" ]] && get_template
     check_ext
     create_file
