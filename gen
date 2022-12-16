@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -xu
+
 # Generate: A command-line script file generation tool written in bash 3.2+.
 # https://github.com/membersincewayback/gen
 #
