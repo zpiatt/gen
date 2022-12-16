@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -xu
 # Generate: A command-line script file generation tool written in bash 3.2+.
 # https://github.com/membersincewayback/gen
 #
@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.4.3 - December 14, 2022"
+version="Generate (gen) version: 1.5.0 - December 16, 2022"
 
 which_template() {
     if [[ -n "${template_file:-}" ]]; then
@@ -116,6 +116,7 @@ Generate FILE, auto-input typical text, and auto-launch default editor.
   -s,   suppress auto-launch of editor
   -e,   select editor ( gen -e nano test.txt )
   -d,   force default template despite available custom
+  -m    generate multiple files. ( gen -m [0-9] test.txt )
   -v,   display version number and exit
   -h,   display this help and exit
 
@@ -132,19 +133,34 @@ launch_ed() {
     fi
 }
 
-echo_text() {
-    which_template
-    gen_"${format:-sh}" >> "${filename}"
-}
-
-create_file() {
-    if [[ -e "$filename" ]]; then
+create_one() {
+    if [[ -e "${filename}" ]]; then
         printf "Filename already exists.\n"; exit 1
     else
-        if ! touch "$filename" 2> /dev/null; then
-            printf "Failed to create %s.\n" "$filename"; exit 1
+        if ! touch "${filename}" 2> /dev/null; then
+            printf "Failed to create %s.\n" "${filename}"; exit 1
         fi
     fi
+}
+
+create_multi() {
+    for ((i=1; i <= multi; i++)); do
+        if [[ -n "${ext:-}" ]]; then
+            new="${filename%.*}""${i}"."${filename##*.}"
+        else
+            new="${filename}""${i}"
+        fi
+        if [[ -e "${new}" ]]; then
+            printf "Filename already exists.\n"; exit 1
+        else
+            if ! touch "${new}" 2> /dev/null; then
+            printf "Failed to create %s.\n" "${new}"; exit 1
+            fi
+        fi
+        [[ -n "${exe:-}" ]] && chmod u+x "${new}"
+        [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${new}"
+    done
+    exit 0
 }
 
 check_ext() {
@@ -169,14 +185,15 @@ get_template() {
 }
 
 get_args() {
-    while getopts ':hxqdse:v' option; do
+    while getopts ':hxqdse:m:v' option; do
         case "$option" in
             h) usage ;;
             x) exe=true ;;
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            e) EDITOR="$OPTARG" ;;
+            e) EDITOR="${OPTARG}" ;;
+            m) multi="${OPTARG}"; suppress=true ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             ?)
                 printf "gen: invalid option -- '%s'\n" "$OPTARG"
@@ -195,9 +212,11 @@ main() {
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" ]] && get_template
     check_ext
-    create_file
+    [[ -z "${quiet:-}" ]] && which_template
+    [[ -n "${multi:-}" ]] && create_multi
+    create_one
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
-    [[ -z "${quiet:-}" ]] && echo_text
+    [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${filename}"
     [[ -z "${suppress:-}" ]] && launch_ed
 }
 
