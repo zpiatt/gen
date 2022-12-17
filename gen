@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.3 - December 17, 2022"
+version="Generate (gen) version: 1.5.4 - December 17, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -126,20 +126,13 @@ EOF
 exit 0
 }
 
-launch_ed() {
-    if ! "${EDITOR}" "${filename}" 2> /dev/null; then
-        printf "Failed to launch editor.\n"
-        printf "Try 'gen -h' for more information.\n"; exit 1
-    fi
-}
-
 which_ed() {
     if [[ -n ${EDITOR:-} ]]; then
         return
     elif [[ -f /usr/bin/vi ]]; then
         EDITOR="/usr/bin/vi"
     else
-        while IFS= read -r -d '' file; do
+        while IFS= read -rd '' file; do
             case $file in
                 */emacs) EDITOR="/usr/bin/emacs"; return ;;
                 */mc) EDITOR="/usr/bin/mc"; return ;;
@@ -157,9 +150,7 @@ create_one() {
     if [[ -e "${filename}" ]]; then
         printf "%s already exists.\n" "${filename}"; exit 1
     else
-        if ! touch "${filename}" 2> /dev/null; then
-            printf "Failed to create %s.\n" "${filename}"; exit 1
-        fi
+        touch "${filename}"
     fi
 }
 
@@ -173,9 +164,7 @@ create_multi() {
         if [[ -e "${new}" ]]; then
             printf "%s already exists.\n" "${new}"; exit 1
         else
-            if ! touch "${new}" 2> /dev/null; then
-            printf "Failed to create %s.\n" "${new}"; exit 1
-            fi
+            touch "${new}"
         fi
         [[ -n "${exe:-}" ]] && chmod u+x "${new}"
         [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${new}"
@@ -211,7 +200,14 @@ get_args() {
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            e) EDITOR="${OPTARG}" ;;
+            e)
+                if ! which "${OPTARG}"; then
+                    printf "Try 'gen -h' for more information.\n"
+                else
+                    EDITOR="${OPTARG}"
+                fi
+            ;;
+
             m)
                 if [[ "${OPTARG}" =~ ^[0-9]$ ]]; then
                     multi="${OPTARG}"; suppress=true
@@ -248,7 +244,7 @@ main() {
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${filename}"
 	which_ed
-    [[ -z "${suppress:-}" ]] && launch_ed
+    [[ -z "${suppress:-}" ]] && "${EDITOR}" "${filename}"
 }
 
 main "$@"
