@@ -216,7 +216,7 @@ get_args() {
                 if [[ "${OPTARG}" =~ ^[0-9]$ ]]; then
                     multi="${OPTARG}"; suppress=true
                 else
-                    printf "Must provide an integer when generating multiple files.\n"
+                    printf "Provide a positive integer to generate multiple files.\n"
                     printf "Try 'gen -h' for more information.\n"; exit 1
                 fi
             ;;
@@ -251,9 +251,4 @@ main() {
     [[ -z "${suppress:-}" ]] && launch_ed
 }
 
-if [[ "$#" -eq 0 ]]; then
-    printf "Must provide filename to generate.\n"
-    printf "Try 'gen -h' for more information.\n"; exit 1
-else
-    main "$@"
-fi
+main "$@"
