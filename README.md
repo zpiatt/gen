@@ -14,6 +14,8 @@ Upcoming features:
  Recently added:
   - Added `-m` option to generate multiple files at once.
     - `gen -m 3 test.sh` creates files similarly to `touch test{1..3}.sh`.
+  - Added which_ed function.
+    - If `$EDITOR` is unset, or `Vi` isn't installed, `find` now searches for several other editors.
 
  Please send me any ideas for increasing portability, or adding features!
 
