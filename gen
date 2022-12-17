@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.1 - December 17, 2022"
+version="Generate (gen) version: 1.5.2 - December 17, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -193,20 +193,18 @@ get_args() {
             s) suppress=true ;;
             e) EDITOR="${OPTARG}" ;;
             m)
-                if [[ "${OPTARG}" =~ [0-9] ]]; then
+                if [[ "${OPTARG}" =~ ^[0-9]$ ]]; then
                     multi="${OPTARG}"; suppress=true
                 else
                     printf "Must provide an integer when generating multiple files.\n"
-                    printf "Try 'gen -h' for more information.\n"
-                    exit 1
+                    printf "Try 'gen -h' for more information.\n"; exit 1
                 fi
             ;;
 
             v) printf "%s\n" "$version"; exit 0 ;;
             ?)
                 printf "gen: invalid option -- '%s'\n" "$OPTARG"
-                printf "Try 'gen -h' for more information.\n"
-                exit 1
+                printf "Try 'gen -h' for more information.\n"; exit 1
             ;;
         esac
     done
