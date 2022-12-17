@@ -18,11 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.0 - December 16, 2022"
+version="Generate (gen) version: 1.5.1 - December 17, 2022"
 
 which_template() {
-    if [[ -n "${template_file:-}" ]]; then
-        template="$(< "${template_file}")"
+    if [[ -n "${template:-}" ]]; then
         format="templates"
 
 gen_templates() {
@@ -90,6 +89,7 @@ EOF
 }
 
 gen_jsx() {
+    basename="${filename##*/}"
 cat << EOF
 import React from 'react';
 
@@ -135,7 +135,7 @@ launch_ed() {
 
 create_one() {
     if [[ -e "${filename}" ]]; then
-        printf "Filename already exists.\n"; exit 1
+        printf "%s already exists.\n" "${filename}"; exit 1
     else
         if ! touch "${filename}" 2> /dev/null; then
             printf "Failed to create %s.\n" "${filename}"; exit 1
@@ -151,7 +151,7 @@ create_multi() {
             new="${filename}""${i}"
         fi
         if [[ -e "${new}" ]]; then
-            printf "Filename already exists.\n"; exit 1
+            printf "%s already exists.\n" "${new}"; exit 1
         else
             if ! touch "${new}" 2> /dev/null; then
             printf "Failed to create %s.\n" "${new}"; exit 1
@@ -166,8 +166,6 @@ create_multi() {
 check_ext() {
     case "$ext" in
         awk) exe=true ;;
-        ksh) exe=true ;;
-        csh) exe=true ;;
         c) format="c" ;;
         jsx) format="jsx" ;;
         html|htm) format="html" ;;
@@ -175,13 +173,14 @@ check_ext() {
         py) exe=true; format="py" ;;
         pl) exe=true; format="pl" ;;
         sh|bash) exe=true; ext="bash" ;;
-        *) [[ -z "${template_file:-}" ]] && quiet=true ;;
+        *sh) exe=true ;;
+        *) [[ -z "${template:-}" ]] && quiet=true ;;
     esac
 }
 
 get_template() {
     [[ -f "${HOME}/.gen/templates/template.${ext:-}" ]] && \
-        template_file="${HOME}/.gen/templates/template.${ext}"
+        template="$(< "${HOME}/.gen/templates/template.${ext}")"
 }
 
 get_args() {
@@ -193,7 +192,16 @@ get_args() {
             d) default=true ;;
             s) suppress=true ;;
             e) EDITOR="${OPTARG}" ;;
-            m) multi="${OPTARG}"; suppress=true ;;
+            m)
+                if [[ "${OPTARG}" =~ [0-9] ]]; then
+                    multi="${OPTARG}"; suppress=true
+                else
+                    printf "Must provide an integer when generating multiple files.\n"
+                    printf "Try 'gen -h' for more information.\n"
+                    exit 1
+                fi
+            ;;
+
             v) printf "%s\n" "$version"; exit 0 ;;
             ?)
                 printf "gen: invalid option -- '%s'\n" "$OPTARG"
@@ -208,7 +216,6 @@ get_args() {
 
 main() {
     get_args "$@"
-    basename="${filename##*/}"
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" ]] && get_template
     check_ext
