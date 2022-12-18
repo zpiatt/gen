@@ -209,7 +209,7 @@ get_args() {
             ;;
 
             m)
-                if [[ "${OPTARG}" =~ ^[0-9]$ ]]; then
+                if [[ "${OPTARG}" =~ ^[0-9]*$ ]]; then
                     multi="${OPTARG}"; suppress=true
                 else
                     printf "Provide a positive integer to generate multiple files.\n"
