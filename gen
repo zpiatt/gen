@@ -127,7 +127,7 @@ exit 0
 }
 
 which_ed() {
-    while IFS= read -rd '' file; do
+    while IFS= read -r file; do
         case $file in
             */emacs) EDITOR="/usr/bin/emacs"; return ;;
             */mc) EDITOR="/usr/bin/mc"; return ;;
@@ -138,7 +138,7 @@ which_ed() {
             */vim) EDITOR="/usr/bin/vim"; return ;;
             */vi) EDITOR="/usr/bin/vi"; return ;;
         esac
-    done < <(find /usr/bin -type f -name '*' -print0)
+    done < <(find /usr/bin -type f)
 }
 
 create_one() {
@@ -188,7 +188,7 @@ get_template() {
 }
 
 get_args() {
-    while getopts ':hxqdse:m:v' option; do
+    while getopts ':hxqdse:vm:' option; do
         case "$option" in
             h) usage ;;
             x) exe=true ;;
@@ -196,7 +196,7 @@ get_args() {
             d) default=true ;;
             s) suppress=true ;;
             e) EDITOR="${OPTARG}" ;;
-
+            v) printf "%s\n" "$version"; exit 0 ;;
             m)
                 if [[ "${OPTARG}" =~ ^[0-9]*$ ]]; then
                     multi="${OPTARG}"; suppress=true
@@ -206,7 +206,6 @@ get_args() {
                 fi
             ;;
 
-            v) printf "%s\n" "$version"; exit 0 ;;
             ?)
                 printf "gen: invalid option -- '%s'\n" "$OPTARG"
                 printf "Try 'gen -h' for more information.\n"; exit 1
