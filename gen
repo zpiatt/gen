@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.4 - December 17, 2022"
+version="Generate (gen) version: 1.5.5 - December 18, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -138,7 +138,7 @@ which_ed() {
             */vim) EDITOR="/usr/bin/vim"; return ;;
             */vi) EDITOR="/usr/bin/vi"; return ;;
         esac
-    done < <(find /usr/bin -type f)
+    done < <(find /usr/bin)
 }
 
 create_one() {
