@@ -25,15 +25,15 @@ which_template() {
         format="templates"
 
 gen_templates() {
-cat <<[-]EOF
+cat <<EOF
 ${template}
-[-]EOF
+EOF
 }
 
     else
 
 gen_py() {
-cat << EOF
+cat <<EOF
 #!/usr/bin/env python
 def main():
 
@@ -43,7 +43,7 @@ EOF
 }
 
 gen_pl() {
-cat << EOF
+cat <<EOF
 #!/usr/bin/env perl
 use strict;
 use warnings;
@@ -51,7 +51,7 @@ EOF
 }
 
 gen_c() {
-cat << EOF
+cat <<EOF
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -64,14 +64,14 @@ EOF
 }
 
 gen_sh() {
-cat << EOF
+cat <<EOF
 #!/usr/bin/env ${ext}
 
 EOF
 }
 
 gen_html() {
-cat << EOF
+cat <<EOF
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -90,7 +90,7 @@ EOF
 
 gen_jsx() {
     basename="${filename##*/}"
-cat << EOF
+cat <<EOF
 import React from 'react';
 
 function ${basename%.*}() {
@@ -107,7 +107,7 @@ EOF
 }
 
 usage() {
-cat << EOF
+cat <<EOF
 Usage: gen [OPTION]... [FILE]...
 Generate FILE, auto-input typical text, and auto-launch default editor.
 
@@ -127,23 +127,18 @@ exit 0
 }
 
 which_ed() {
-    if [[ -n ${EDITOR:-} ]]; then
-        return
-    elif [[ -f /usr/bin/vi ]]; then
-        EDITOR="/usr/bin/vi"
-    else
-        while IFS= read -rd '' file; do
-            case $file in
-                */emacs) EDITOR="/usr/bin/emacs"; return ;;
-                */mc) EDITOR="/usr/bin/mc"; return ;;
-                */micro) EDITOR="/usr/bin/micro"; return ;;
-                */nano) EDITOR="/usr/bin/nano"; return ;;
-                */ne) EDITOR="/usr/bin/ne"; return ;;
-                */nvim) EDITOR="/usr/bin/nvim"; return ;;
-                */vim) EDITOR="/usr/bin/vim"; return ;;
-            esac
-        done < <(find /usr/bin -type f -name '*' -print0)
-    fi
+    while IFS= read -rd '' file; do
+        case $file in
+            */emacs) EDITOR="/usr/bin/emacs"; return ;;
+            */mc) EDITOR="/usr/bin/mc"; return ;;
+            */micro) EDITOR="/usr/bin/micro"; return ;;
+            */nano) EDITOR="/usr/bin/nano"; return ;;
+            */ne) EDITOR="/usr/bin/ne"; return ;;
+            */nvim) EDITOR="/usr/bin/nvim"; return ;;
+            */vim) EDITOR="/usr/bin/vim"; return ;;
+            */vi) EDITOR="/usr/bin/vi"; return ;;
+        esac
+    done < <(find /usr/bin -type f -name '*' -print0)
 }
 
 create_one() {
@@ -243,7 +238,7 @@ main() {
     create_one
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${filename}"
-	which_ed
+	[[ -z ${EDITOR:-} ]] && which_ed
     [[ -z "${suppress:-}" ]] && "${EDITOR}" "${filename}"
 }
 
