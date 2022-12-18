@@ -128,7 +128,7 @@ exit 0
 
 which_ed() {
     while IFS= read -r file; do
-        case $file in
+        case "$file" in
             */emacs) EDITOR="/usr/bin/emacs"; return ;;
             */mc) EDITOR="/usr/bin/mc"; return ;;
             */micro) EDITOR="/usr/bin/micro"; return ;;
@@ -142,10 +142,12 @@ which_ed() {
 }
 
 create_one() {
-    if [[ -e "${filename}" ]]; then
-        printf "%s already exists.\n" "${filename}"; exit 1
+    if [[ -e "$filename" ]]; then
+        printf "%s already exists.\n" "$filename"; exit 1
     else
-        touch "${filename}"
+        if ! touch "$filename" 2> /dev/null; then
+            printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
+        fi
     fi
 }
 
@@ -154,15 +156,17 @@ create_multi() {
         if [[ -n "${ext:-}" ]]; then
             new="${filename%.*}""${i}"."${filename##*.}"
         else
-            new="${filename}""${i}"
+            new="$filename""$i"
         fi
-        if [[ -e "${new}" ]]; then
-            printf "%s already exists.\n" "${new}"; exit 1
+        if [[ -e "$new" ]]; then
+            printf "%s already exists.\n" "$new"; exit 1
         else
-            touch "${new}"
+            if ! touch "$new" 2> /dev/null; then
+                printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
+            fi
         fi
-        [[ -n "${exe:-}" ]] && chmod u+x "${new}"
-        [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${new}"
+        [[ -n "${exe:-}" ]] && chmod u+x "$new"
+        [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$new"
     done
     exit 0
 }
@@ -183,8 +187,8 @@ check_ext() {
 }
 
 get_template() {
-    [[ -f "${HOME}/.gen/templates/template.${ext:-}" ]] && \
-        template="$(< "${HOME}/.gen/templates/template.${ext}")"
+    [[ -f "$HOME/.gen/templates/template.$ext" ]] && \
+        template="$(< "$HOME/.gen/templates/template.$ext")"
 }
 
 get_args() {
@@ -195,11 +199,11 @@ get_args() {
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            e) EDITOR="${OPTARG}" ;;
+            e) EDITOR="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             m)
-                if [[ "${OPTARG}" =~ ^[0-9]*$ ]]; then
-                    multi="${OPTARG}"; suppress=true
+                if [[ "$OPTARG" =~ ^[0-9]*$ ]]; then
+                    multi="$OPTARG"; suppress=true
                 else
                     printf "Provide a positive integer to generate multiple files.\n"
                     printf "Try 'gen -h' for more information.\n"; exit 1
@@ -214,7 +218,7 @@ get_args() {
     done
     shift "$((OPTIND -1))"
     if [[ -n "${1:-}" ]]; then
-        filename="${1}"
+        filename="$1"
     else
         printf "Must provide filename to generate.\n"
         printf "Try 'gen -h' for more information.\n"; exit 1
@@ -224,15 +228,15 @@ get_args() {
 main() {
     get_args "$@"
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
-    [[ -z "${default:-}" ]] && get_template
+    [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
     check_ext
     [[ -z "${quiet:-}" ]] && which_template
     [[ -n "${multi:-}" ]] && create_multi
     create_one
-    [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
-    [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${filename}"
+    [[ -n "${exe:-}" ]] && chmod u+x "$filename"
+    [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$filename"
     [[ -z ${EDITOR:-} ]] && which_ed
-    [[ -z "${suppress:-}" ]] && "${EDITOR}" "${filename}"
+    [[ -z "${suppress:-}" ]] && "$EDITOR" "$filename"
 }
 
 main "$@"
