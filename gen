@@ -195,13 +195,7 @@ get_args() {
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            e)
-                if ! which "${OPTARG}"; then
-                    printf "Try 'gen -h' for more information.\n"
-                else
-                    EDITOR="${OPTARG}"
-                fi
-            ;;
+            e) EDITOR="${OPTARG}" ;;
 
             m)
                 if [[ "${OPTARG}" =~ ^[0-9]*$ ]]; then
@@ -238,7 +232,7 @@ main() {
     create_one
     [[ -n "${exe:-}" ]] && chmod u+x "${filename}"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "${filename}"
-	[[ -z ${EDITOR:-} ]] && which_ed
+    [[ -z ${EDITOR:-} ]] && which_ed
     [[ -z "${suppress:-}" ]] && "${EDITOR}" "${filename}"
 }
 
