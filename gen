@@ -55,8 +55,7 @@ cat <<EOF
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
-{
+int main() {
 
     return 0;
 }
@@ -154,9 +153,9 @@ create_one() {
 create_multi() {
     for ((i=1; i <= multi; i++)); do
         if [[ -n "${ext:-}" ]]; then
-            new="${filename%.*}""${i}"."${filename##*.}"
+            new="${filename%.*}${i}.${filename##*.}"
         else
-            new="$filename""$i"
+            new="${filename}${i}"
         fi
         if [[ -e "$new" ]]; then
             printf "%s already exists.\n" "$new"; exit 1
