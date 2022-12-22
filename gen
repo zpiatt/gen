@@ -142,7 +142,7 @@ which_ed() {
 
 create_one() {
     if [[ -e "$filename" ]]; then
-        printf "%s already exists.\n" "$filename"; exit 1
+        printf "gen: file '%s' already exists.\n" "$filename"; exit 1
     else
         if ! touch "$filename" 2> /dev/null; then
             printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
@@ -158,7 +158,7 @@ create_multi() {
             new="${filename}${i}"
         fi
         if [[ -e "$new" ]]; then
-            printf "%s already exists.\n" "$new"; exit 1
+            printf "gen: file '%s' already exists.\n" "$new"; exit 1
         else
             if ! touch "$new" 2> /dev/null; then
                 printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
@@ -204,7 +204,7 @@ get_args() {
                 if [[ "$OPTARG" =~ ^[0-9]*$ ]]; then
                     multi="$OPTARG"; suppress=true
                 else
-                    printf "Provide a positive integer to generate multiple files.\n"
+                    printf "gen: Provide a positive integer to generate multiple files.\n"
                     printf "Try 'gen -h' for more information.\n"; exit 1
                 fi
             ;;
@@ -219,7 +219,7 @@ get_args() {
     if [[ -n "${1:-}" ]]; then
         filename="$1"
     else
-        printf "Must provide filename to generate.\n"
+        printf "gen: Must provide filename.\n"
         printf "Try 'gen -h' for more information.\n"; exit 1
     fi
 }
