@@ -10,12 +10,13 @@ Generate (gen) is a command line script template automation tool written in `bas
 
 Upcoming features:
   - Continued bug testing/verifying functionality across Linux/BSD.
+  - I'm working on a `-f` option to customize file permissions. (i.e. `gen -f 775 test.sh` or `gen -f ug+x test.sh`)
 
  Recently added:
   - Added `-m` option to generate multiple files at once.
     - `gen -m 3 test.sh` creates files similarly to `touch test{1..3}.sh`.
   - Added which_ed function.
-    - If `$EDITOR` is unset, `which` now searches `$PATH` for the following editors: `nano, vim, vi, emacs, ed`. If the behavior is undesired, please refer to the `Editors` wiki linked below for how-to set your `$EDITOR` environmental variable.
+    - If both `$VISUAL` and `$EDITOR` are unset, `which` now searches `$PATH` for the following editors: `nano, vi, ed` (in order). If the behavior is undesired, please refer to the `Editors` wiki linked below for how-to set one of these environmental variables.
 
  Please send me any ideas for increasing portability, or adding features!
 

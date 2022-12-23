@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.6 - December 22, 2022"
+version="Generate (gen) version: 1.5.7 - December 23, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -126,10 +126,16 @@ exit 0
 }
 
 which_ed() {
-    editors=( nano vim vi emacs ed )
-    for editor in "${editors[@]}"; do
-        EDITOR="$(which "$editor" 2> /dev/null)" && return
-    done
+    if [[ $(which "${VISUAL:-}" 2> /dev/null) ]]; then
+        editor="$VISUAL"
+    elif [[ $(which "${EDITOR:-}" 2> /dev/null) ]]; then
+        editor="$EDITOR"
+    else
+        editors=( nano vi ed )
+        for ed in "${editors[@]}"; do
+            editor="$(which "$ed" 2> /dev/null)" && return
+        done
+    fi
 }
 
 create_one() {
@@ -183,15 +189,15 @@ get_template() {
 }
 
 get_args() {
-    while getopts ':hxqdse:vm:' option; do
+    while getopts ':hxqdsve:m:' option; do
         case "$option" in
             h) usage ;;
             x) exe=true ;;
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            e) EDITOR="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
+            e) if which "$OPTARG" 2> /dev/null; then editor="$OPTARG"; fi ;;
             m)
                 if [[ "$OPTARG" =~ ^[0-9]*$ ]]; then
                     multi="$OPTARG"; suppress=true
@@ -226,8 +232,8 @@ main() {
     create_one
     [[ -n "${exe:-}" ]] && chmod u+x "$filename"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$filename"
-    [[ -z ${EDITOR:-} ]] && which_ed
-    [[ -z "${suppress:-}" ]] && "$EDITOR" "$filename"
+    [[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
+    [[ -z "${suppress:-}" ]] && "$editor" "$filename"
 }
 
 main "$@"
