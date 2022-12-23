@@ -15,7 +15,7 @@ Upcoming features:
   - Added `-m` option to generate multiple files at once.
     - `gen -m 3 test.sh` creates files similarly to `touch test{1..3}.sh`.
   - Added which_ed function.
-    - If `$EDITOR` is unset, `find` now searches `/usr/bin` for several other editors. In practice, this will likely select an editor alphabetically. If the behavior is undesired, please refer to the `Editors` wiki linked below for how-to set your `$EDITOR` environmental variable.
+    - If `$EDITOR` is unset, `which` now searches `$PATH` for the following editors: `nano, vim, vi, emacs, ed`. If the behavior is undesired, please refer to the `Editors` wiki linked below for how-to set your `$EDITOR` environmental variable.
 
  Please send me any ideas for increasing portability, or adding features!
 

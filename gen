@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.5 - December 18, 2022"
+version="Generate (gen) version: 1.5.6 - December 22, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -126,18 +126,10 @@ exit 0
 }
 
 which_ed() {
-    while IFS= read -r file; do
-        case "$file" in
-            */emacs) EDITOR="/usr/bin/emacs"; return ;;
-            */mc) EDITOR="/usr/bin/mc"; return ;;
-            */micro) EDITOR="/usr/bin/micro"; return ;;
-            */nano) EDITOR="/usr/bin/nano"; return ;;
-            */ne) EDITOR="/usr/bin/ne"; return ;;
-            */nvim) EDITOR="/usr/bin/nvim"; return ;;
-            */vim) EDITOR="/usr/bin/vim"; return ;;
-            */vi) EDITOR="/usr/bin/vi"; return ;;
-        esac
-    done < <(find /usr/bin)
+    editors=( nano vim vi emacs ed )
+    for editor in "${editors[@]}"; do
+        EDITOR="$(which "$editor" 2> /dev/null)" && return
+    done
 }
 
 create_one() {
