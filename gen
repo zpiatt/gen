@@ -111,6 +111,7 @@ Usage: gen [OPTION]... [FILE]...
 Generate FILE, auto-input typical text, and auto-launch default editor.
 
   -x,   make file executable regardless of default
+  -c,   customize file permissions ( gen -c ug+x test.txt )
   -q,   quiet auto-input of script template
   -s,   suppress auto-launch of editor
   -e,   select editor ( gen -e nano test.txt )
@@ -133,7 +134,7 @@ which_ed() {
     else
         editors=( nano vi ed )
         for ed in "${editors[@]}"; do
-            editor="$(which "$ed" 2> /dev/null)" && return
+            editor="$(which "$ed" &> /dev/null)" && return
         done
     fi
 }
@@ -198,7 +199,7 @@ get_args() {
             s) suppress=true ;;
             c) mode="$OPTARG"; exe=true ;;
             v) printf "%s\n" "$version"; exit 0 ;;
-            e) if which "$OPTARG" 2> /dev/null; then editor="$OPTARG"; fi ;;
+            e) if which "$OPTARG" &> /dev/null; then editor="$OPTARG"; fi ;;
             m)
                 if [[ "$OPTARG" =~ ^[0-9]*$ ]]; then
                     multi="$OPTARG"; suppress=true
