@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.7 - December 23, 2022"
+version="Generate (gen) version: 1.5.8 - December 24, 2022"
 
 which_template() {
     if [[ -n "${template:-}" ]]; then
@@ -162,7 +162,7 @@ create_multi() {
                 printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
             fi
         fi
-        [[ -n "${exe:-}" ]] && chmod u+x "$new"
+        [[ -n "${exe:-}" ]] && chmod "${mode:-u+x}" "$new"
         [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$new"
     done
     exit 0
@@ -189,13 +189,14 @@ get_template() {
 }
 
 get_args() {
-    while getopts ':hxqdsve:m:' option; do
+    while getopts ':hxqdsc:ve:m:' option; do
         case "$option" in
             h) usage ;;
             x) exe=true ;;
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
+            c) mode="$OPTARG"; exe=true ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             e) if which "$OPTARG" 2> /dev/null; then editor="$OPTARG"; fi ;;
             m)
@@ -226,11 +227,11 @@ main() {
     get_args "$@"
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-    check_ext
+    [[ -n "${ext:-}" ]] && check_ext || quiet=true
     [[ -z "${quiet:-}" ]] && which_template
     [[ -n "${multi:-}" ]] && create_multi
     create_one
-    [[ -n "${exe:-}" ]] && chmod u+x "$filename"
+    [[ -n "${exe:-}" ]] && chmod "${mode:-u+x}" "$filename"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$filename"
     [[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
     [[ -z "${suppress:-}" ]] && "$editor" "$filename"

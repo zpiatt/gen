@@ -10,9 +10,10 @@ Generate (gen) is a command line script template automation tool written in `bas
 
 Upcoming features:
   - Continued bug testing/verifying functionality across Linux/BSD.
-  - I'm working on a `-f` option to customize file permissions. (i.e. `gen -f 775 test.sh` or `gen -f ug+x test.sh`)
 
  Recently added:
+  - Added `-c` option to customize file permissions. (i.e. `gen -c 775 test.sh` or `gen -c ug+x test.sh`)
+    - When applicable, `gen` defaults to giving the owner execute. `-x` was added to assign execute for custom templates, this new option builds on that flexibility.
   - Added `-m` option to generate multiple files at once.
     - `gen -m 3 test.sh` creates files similarly to `touch test{1..3}.sh`.
   - Added which_ed function.
