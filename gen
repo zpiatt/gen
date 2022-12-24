@@ -126,9 +126,9 @@ exit 0
 }
 
 which_ed() {
-    if [[ $(which "${VISUAL:-}" 2> /dev/null) ]]; then
+    if which "${VISUAL:-}" &> /dev/null; then
         editor="$VISUAL"
-    elif [[ $(which "${EDITOR:-}" 2> /dev/null) ]]; then
+    elif which "${EDITOR:-}" &> /dev/null; then
         editor="$EDITOR"
     else
         editors=( nano vi ed )
