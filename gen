@@ -18,19 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.5.8 - December 24, 2022"
+version="Generate (gen) version: 1.6.0 - December 26, 2022"
 
-which_template() {
-    if [[ -n "${template:-}" ]]; then
-        format="templates"
+LC_ALL=C
+LANG=C
 
 gen_templates() {
 cat <<EOF
 ${template}
 EOF
 }
-
-    else
 
 gen_py() {
 cat <<EOF
@@ -101,8 +98,6 @@ function ${basename%.*}() {
 
 export default ${basename%.*};
 EOF
-}
-    fi
 }
 
 usage() {
@@ -180,7 +175,7 @@ check_ext() {
         pl) exe=true; format="pl" ;;
         sh|bash) exe=true; ext="bash" ;;
         *sh) exe=true ;;
-        *) [[ -z "${template:-}" ]] && quiet=true ;;
+        *) [[ -z "${template:-}" ]] && quiet=true || format="templates" ;;
     esac
 }
 
@@ -229,7 +224,6 @@ main() {
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
     [[ -n "${ext:-}" ]] && check_ext || quiet=true
-    [[ -z "${quiet:-}" ]] && which_template
     [[ -n "${multi:-}" ]] && create_multi
     create_one
     [[ -n "${exe:-}" ]] && chmod "${mode:-u+x}" "$filename"
