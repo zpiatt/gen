@@ -158,7 +158,7 @@ create_multi() {
                 printf "gen: cannot generate '%s': Permission denied\n" "$filename"; exit 1
             fi
         fi
-        [[ -n "${exe:-}" ]] && chmod "${mode:-u+x}" "$new"
+        [[ -n "${mode:-}" ]] && chmod "${mode}" "$new"
         [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$new"
     done
     exit 0
@@ -166,33 +166,39 @@ create_multi() {
 
 check_ext() {
     case "${ext:-}" in
-        awk) exe=true ;;
+        awk) mode="u+g" ;;
         c) format="c" ;;
         jsx) format="jsx" ;;
         html|htm) format="html" ;;
-        js) exe=true; ext="node" ;;
-        py) exe=true; format="py" ;;
-        pl) exe=true; format="pl" ;;
-        sh|bash) exe=true; ext="bash" ;;
-        *sh) exe=true ;;
-        *) [[ -z "${template:-}" ]] && quiet=true || format="templates" ;;
+        js) mode="u+g"; ext="node" ;;
+        py) mode="u+g"; format="py" ;;
+        pl) mode="u+g"; format="pl" ;;
+        sh|bash) mode="u+g"; ext="bash" ;;
+        *sh) mode="u+g" ;;
+        *)
+            if [[ -n "${template:-}" ]]; then
+                format="templates"
+            else
+                quiet=true
+            fi
+        ;;
     esac
 }
 
 get_template() {
     [[ -f "$HOME/.gen/templates/template.$ext" ]] && \
-        template="$(< "$HOME/.gen/templates/template.$ext")"
+        template="$(< "$HOME/.gen/templates/template.$ext")"; \
 }
 
 get_args() {
     while getopts ':hxqdsc:ve:m:' option; do
         case "$option" in
             h) usage ;;
-            x) exe=true ;;
+            x) mode="u+g" ;;
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            c) mode="$OPTARG"; exe=true ;;
+            c) mode="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             e) if which "$OPTARG" &> /dev/null; then editor="$OPTARG"; fi ;;
             m)
@@ -223,10 +229,10 @@ main() {
     get_args "$@"
     [[ "${filename}" == *.* ]] && ext="${filename##*.}"
     [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-    [[ -n "${ext:-}" ]] && check_ext || quiet=true
+    check_ext
     [[ -n "${multi:-}" ]] && create_multi
     create_one
-    [[ -n "${exe:-}" ]] && chmod "${mode:-u+x}" "$filename"
+    [[ -n "${mode:-}" ]] && chmod "${mode}" "$filename"
     [[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$filename"
     [[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
     [[ -z "${suppress:-}" ]] && "$editor" "$filename"
