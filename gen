@@ -166,15 +166,15 @@ create_multi() {
 
 check_ext() {
     case "${ext:-}" in
-        awk) mode="u+g" ;;
+        awk) mode="u+x" ;;
         c) format="c" ;;
         jsx) format="jsx" ;;
         html|htm) format="html" ;;
-        js) mode="u+g"; ext="node" ;;
-        py) mode="u+g"; format="py" ;;
-        pl) mode="u+g"; format="pl" ;;
-        sh|bash) mode="u+g"; ext="bash" ;;
-        *sh) mode="u+g" ;;
+        js) mode="u+x"; ext="node" ;;
+        py) mode="u+x"; format="py" ;;
+        pl) mode="u+x"; format="pl" ;;
+        sh|bash) mode="u+x"; ext="bash" ;;
+        *sh) mode="u+x" ;;
         *)
             if [[ -n "${template:-}" ]]; then
                 format="templates"
@@ -187,14 +187,14 @@ check_ext() {
 
 get_template() {
     [[ -f "$HOME/.gen/templates/template.$ext" ]] && \
-        template="$(< "$HOME/.gen/templates/template.$ext")"; \
+        template="$(< "$HOME/.gen/templates/template.$ext")"
 }
 
 get_args() {
     while getopts ':hxqdsc:ve:m:' option; do
         case "$option" in
             h) usage ;;
-            x) mode="u+g" ;;
+            x) mode="u+x" ;;
             q) quiet=true ;;
             d) default=true ;;
             s) suppress=true ;;
