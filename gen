@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.6.0 - December 26, 2022"
+version="Generate (gen) version: 1.6.1 - January 1, 2023"
 
 gen_templates() {
 cat <<EOF
@@ -33,14 +33,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-EOF
-}
-
-gen_pl() {
-cat <<EOF
-#!/usr/bin/env perl
-use strict;
-use warnings;
 EOF
 }
 
@@ -168,8 +160,8 @@ check_ext() {
         jsx) format="jsx" ;;
         html|htm) format="html" ;;
         js) mode="u+x"; ext="node" ;;
+        pl) mode="u+x"; ext="perl" ;;
         py) mode="u+x"; format="py" ;;
-        pl) mode="u+x"; format="pl" ;;
         sh|bash) mode="u+x"; ext="bash" ;;
         *sh) mode="u+x" ;;
         *)
