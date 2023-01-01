@@ -20,9 +20,6 @@
 
 version="Generate (gen) version: 1.6.0 - December 26, 2022"
 
-LC_ALL=C
-LANG=C
-
 gen_templates() {
 cat <<EOF
 ${template}
