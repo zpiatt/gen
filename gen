@@ -18,96 +18,96 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.6.1 - January 1, 2023"
+version="Generate (gen) version: 1.6.2 - January 13, 2023"
 
 gen_templates() {
-cat <<EOF
-${template}
-EOF
+	cat <<-EOF
+	${template}
+	EOF
 }
 
 gen_py() {
-cat <<EOF
-#!/usr/bin/env python
-def main():
+	cat <<-EOF
+	#!/usr/bin/env python
+	def main():
 
-if __name__ == '__main__':
-    main()
-EOF
+	if __name__ == '__main__':
+		main()
+	EOF
 }
 
 gen_c() {
-cat <<EOF
-#include <stdio.h>
-#include <stdlib.h>
+	cat <<-EOF
+	#include <stdio.h>
+	#include <stdlib.h>
 
-int main() {
+	int main() {
 
-    return 0;
-}
-EOF
+		return 0;
+	}
+	EOF
 }
 
 gen_sh() {
-cat <<EOF
-#!/usr/bin/env ${ext}
+	cat <<-EOF
+	#!/usr/bin/env ${ext}
 
-EOF
+	EOF
 }
 
 gen_html() {
-cat <<EOF
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HTML 5 Boilerplate</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-        <script src="index.js"></script>
-  </body>
-</html>
-EOF
+	cat <<-EOF
+	<!DOCTYPE html>
+	<html lang="en">
+	  <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>HTML 5 Boilerplate</title>
+        <link rel="stylesheet" href="style.css">
+	  </head>
+	  <body>
+	       <script src="index.js"></script>
+	  </body>
+	</html>
+	EOF
 }
 
 gen_jsx() {
     basename="${filename##*/}"
-cat <<EOF
-import React from 'react';
+	cat <<-EOF
+	import React from 'react';
 
-function ${basename%.*}() {
-  return (
-    <>
-    </>
-  );
-}
+	function ${basename%.*}() {
+	  return (
+	    <>
+	    </>
+	);
+	}
 
-export default ${basename%.*};
-EOF
+	export default ${basename%.*};
+	EOF
 }
 
 usage() {
-cat <<EOF
-Usage: gen [OPTION]... [FILE]...
-Generate FILE, auto-input typical text, and auto-launch default editor.
+	cat <<-EOF
+	Usage: gen [OPTION]... [FILE]...
+	Generate FILE, auto-input typical text, and auto-launch default editor.
 
-  -x,   make file executable regardless of default
-  -c,   customize file permissions ( gen -c ug+x test.txt )
-  -q,   quiet auto-input of script template
-  -s,   suppress auto-launch of editor
-  -e,   select editor ( gen -e nano test.txt )
-  -d,   force default template despite available custom
-  -m    generate multiple files. ( gen -m [0-9] test.txt )
-  -v,   display version number and exit
-  -h,   display this help and exit
+	  -x,   make file executable regardless of default
+	  -c,   customize file permissions ( gen -c ug+x test.txt )
+	  -q,   quiet auto-input of script template
+	  -s,   suppress auto-launch of editor
+	  -e,   select editor ( gen -e nano test.txt )
+	  -d,   force default template despite available custom
+	  -m    generate multiple files. ( gen -m [0-9] test.txt )
+	  -v,   display version number and exit
+	  -h,   display this help and exit
 
-Full documentation <https://github.com/membersincewayback/gen>
-${version}
-EOF
-exit 0
+	Full documentation <https://github.com/membersincewayback/gen>
+	${version}
+	EOF
+	exit 0
 }
 
 which_ed() {
