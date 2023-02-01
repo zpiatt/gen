@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Generate: A command-line script file generation tool written in bash 3.2+.
-# https://github.com/membersincewayback/gen
+# https://github.com/zpiatt/gen
 #
 # Copyright (C) 2022 Zac Piatt
 #
@@ -104,7 +104,7 @@ usage() {
 	  -v,   display version number and exit
 	  -h,   display this help and exit
 
-	Full documentation <https://github.com/membersincewayback/gen>
+	Full documentation <https://github.com/zpiatt/gen>
 	${version}
 	EOF
 	exit 0
