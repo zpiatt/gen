@@ -11,16 +11,12 @@ Generate (gen) is a command line script template automation tool written in `bas
 Upcoming features:
   - Continued bug testing/verifying functionality across Linux/BSD.
 
- Recently added:
-  - Added `-c` option to customize file permissions. (i.e. `gen -c 775 test.sh` or `gen -c ug+x test.sh`)
-    - When applicable, `gen` defaults to giving the owner execute. `-x` was added to assign execute for custom templates, this new option builds on that flexibility.
-  - Added `-m` option to generate multiple files at once.
-    - `gen -m 3 test.sh` creates files similarly to `touch test{1..3}.sh`.
-  - Added which_ed function.
-    - If both `$VISUAL` and `$EDITOR` are unset, `which` now searches `$PATH` for the following editors: `nano, vi, ed` (in order). If the behavior is undesired, please refer to the `Editors` wiki linked below for how-to set one of these environmental variables.
+Recently added:
+  - Added man page to install.
+    - generated man page using help2man. Proof of concept for now, but working on make this more robust.
 
  Please send me any ideas for increasing portability, or adding features!
 
-### More: \[[Installation](https://github.com/membersincewayback/gen/wiki/Installation)\] \[[Templates](https://github.com/membersincewayback/gen/wiki/Templates)\] \[[Editors](https://github.com/membersincewayback/gen/wiki/Editors)\] \[[Wiki](https://github.com/membersincewayback/gen/wiki)\]
+### More: \[[Installation](https://github.com/zpiatt/gen/wiki/Installation)\] \[[Templates](https://github.com/zpiatt/gen/wiki/Templates)\] \[[Editors](https://github.com/zpiatt/gen/wiki/Editors)\] \[[Wiki](https://github.com/zpiatt/gen/wiki)\]
 
 <img src="https://i.imgur.com/UNmB5Mu.gif" alt="gen" align="left" height="500px">
