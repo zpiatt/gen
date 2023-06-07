@@ -13,9 +13,9 @@ Upcoming features:
 
 Recently added:
   - Added man page to install.
-    - generated man page using help2man. Proof of concept for now, but working on making this more robust.
-  - Added `-x` option to overwrite filename is existing.
-    - Currently, `gen` exits if (with error message) if a file exists, this option will overwrite the contents and change file permissions (assuming the user has permission to do so).
+    - Originally generated man page using help2man. I've added a lot of detail, but am working on making this more robust.
+  - Added `-f` option to overwrite filename is existing without prompt (similar to `rm -f`).
+    - Without this option, `gen` will prompt a user to overwrite if a file exists.
 
  Please send me any ideas for increasing portability, or adding features!
 
