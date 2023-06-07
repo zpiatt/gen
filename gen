@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.6.3 - June 6, 2023"
+version="Generate (gen) version: 1.6.4 - June 7, 2023"
 
 gen_templates() {
 	cat <<-EOF
@@ -92,14 +92,15 @@ gen_jsx() {
 usage() {
 	cat <<-EOF
 	Usage: gen [OPTION]... [FILE]...
-	Generate FILE, auto-input typical text, and auto-launch default editor.
+	Generate FILE, input script template, and launch default editor.
 
-	  -x,   make file executable regardless of default
-	  -c,   customize file permissions ( gen -c ug+x test.sh )
-	  -q,   quiet auto-input of script template
-	  -s,   suppress auto-launch of editor
-	  -e,   select editor ( gen -e nano test.py )
-	  -d,   force default template despite available custom
+	  -x,   add execute to user permissions regardless of default
+	  -c,   customize file permissions ( gen -c 754 example.sh )
+	  -q,   quiet automatic input of script template
+	  -f,	overwrite existing file contents, never prompt
+	  -s,   suppress launch of editor
+	  -e,   manually select editor ( gen -e nano example.py )
+	  -d,   use default template despite available custom template
 	  -v,   display version number and exit
 	  -h,   display help and exit
 
@@ -122,10 +123,15 @@ which_ed() {
 }
 
 create_file() {
-	if [[ -e "$filename" ]]; then
-		printf "gen: file '%s' already exists.\n" "$filename"; exit 1
+	if [[ -e "$filename" && -z "$force" ]]; then
+		read -erp "gen: overwrite '${filename}'? " overwrite
+		if [[ ${overwrite,,} == "y" ]]; then
+			if ! touch "$filename"; then exit 1; fi
+		else
+			exit 0
+		fi
 	else
-		touch "$filename"
+		if ! touch "$filename"; then exit 1; fi
 	fi
 }
 
@@ -156,16 +162,24 @@ get_template() {
 }
 
 get_args() {
-	while getopts ':hxqdsc:ve:' option; do
+	while getopts ':hxqfdsc:ve:' option; do
 		case "$option" in
 			h) usage ;;
 			x) mode="u+x" ;;
 			q) quiet=true ;;
+			f) force=true ;;
 			d) default=true ;;
 			s) suppress=true ;;
 			c) mode="$OPTARG" ;;
 			v) printf "%s\n" "$version"; exit 0 ;;
-			e) if which "$OPTARG" &> /dev/null; then editor="$OPTARG"; fi ;;
+			e)
+				if which "$OPTARG" > /dev/null; then
+					editor="$OPTARG"
+				else
+					exit 1
+				fi
+			;;
+
 			?)
 				printf "gen: invalid option -- '%s'\n" "$OPTARG"
 				printf "Try 'gen -h' for more information.\n"; exit 1
@@ -183,12 +197,12 @@ get_args() {
 
 main() {
 	get_args "$@"
-	[[ "${filename}" == *.* ]] && ext="${filename##*.}"
+	[[ "$filename" == *.* ]] && ext="${filename##*.}"
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
 	check_ext
 	create_file
-	[[ -n "${mode:-}" ]] && chmod "${mode}" "$filename"
-	[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" >> "$filename"
+	[[ -n "${mode:-}" ]] && chmod "$mode" "$filename"
+	[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
 }

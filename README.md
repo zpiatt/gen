@@ -14,9 +14,11 @@ Upcoming features:
 Recently added:
   - Added man page to install.
     - generated man page using help2man. Proof of concept for now, but working on making this more robust.
+  - Added `-x` option to overwrite filename is existing.
+    - Currently, `gen` exits if (with error message) if a file exists, this option will overwrite the contents and change file permissions (assuming the user has permission to do so).
 
  Please send me any ideas for increasing portability, or adding features!
 
-<img src="https://i.imgur.com/UNmB5Mu.gif" alt="gen" align="left" height="500px">
-
 ### More: \[[Installation](https://github.com/zpiatt/gen/wiki/Installation)\] \[[Templates](https://github.com/zpiatt/gen/wiki/Templates)\] \[[Editors](https://github.com/zpiatt/gen/wiki/Editors)\] \[[Wiki](https://github.com/zpiatt/gen/wiki)\]
+
+<img src="https://i.imgur.com/UNmB5Mu.gif" alt="gen" align="left" height="500px">
