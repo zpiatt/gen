@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.6.4 - June 7, 2023"
+version="Generate (gen) version: 1.6.5 - June 24, 2023"
 
 gen_templates() {
 	cat <<-EOF
@@ -117,7 +117,7 @@ which_ed() {
 	else
 		local editors=( nano vi ed )
 		for ed in "${editors[@]}"; do
-			editor="$(which "$ed" &> /dev/null)" && return
+			editor="$(which "$ed" 2> /dev/null)" && return
 		done
 	fi
 }
