@@ -2,8 +2,8 @@
 <p align="left">A command line script template automation tool written in bash 3.2+</p>
 
 <p align="left">
-<a href="./LICENSE.md"><img src="https://img.shields.io/github/license/membersincewayback/gen"></a>
-<a href="https://github.com/membersincewayback/gen/releases"><img src="https://img.shields.io/github/v/release/membersincewayback/gen">
+<a href="./LICENSE.md"><img src="https://img.shields.io/github/license/zpiatt/gen"></a>
+<a href="https://github.com/zpiatt/gen/releases"><img src="https://img.shields.io/github/v/release/zpiatt/gen">
 </p>
 
 Generate (gen) is a command line script template automation tool written in `bash 3.2+`. Generate automates the creation of script files, modifies file permissions, inputs custom and default script templates, and lauches your favorite editor seemlessly.
