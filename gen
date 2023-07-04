@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.6.5 - June 24, 2023"
+version="Generate (gen) version: 1.7.0 - July 4, 2023"
 
 gen_templates() {
 	cat <<-EOF
@@ -110,14 +110,12 @@ usage() {
 }
 
 which_ed() {
-	if which "${VISUAL:-}" &> /dev/null; then
-		editor="$VISUAL"
-	elif which "${EDITOR:-}" &> /dev/null; then
-		editor="$EDITOR"
+	if command -v "${VISUAL:-${EDITOR}}" &> /dev/null; then
+		editor="${VISUAL:-${EDITOR}}"
 	else
-		local editors=( nano vi ed )
+		local editors=( nano vi emacs ed )
 		for ed in "${editors[@]}"; do
-			editor="$(which "$ed" 2> /dev/null)" && return
+			editor="$(command -v "$ed" 2> /dev/null)" && return
 		done
 	fi
 }
@@ -125,7 +123,7 @@ which_ed() {
 create_file() {
 	if [[ -e "$filename" && -z "$force" ]]; then
 		read -erp "gen: overwrite '${filename}'? " overwrite
-		if [[ ${overwrite,,} == "y" ]]; then
+		if [[ "${overwrite,,}" =~ ^y(es)?$ ]]; then
 			if ! touch "$filename"; then exit 1; fi
 		else
 			exit 0
@@ -170,13 +168,14 @@ get_args() {
 			f) force=true ;;
 			d) default=true ;;
 			s) suppress=true ;;
-			c) mode="$OPTARG" ;;
+			c) cust_mode="$OPTARG" ;;
 			v) printf "%s\n" "$version"; exit 0 ;;
 			e)
-				if which "$OPTARG" > /dev/null; then
+				if command -v "$OPTARG" &> /dev/null; then
 					editor="$OPTARG"
 				else
-					exit 1
+					printf "gen: %s: not found\n" "$OPTARG"
+					printf "Try 'gen -h' for more information.\n"; exit 1
 				fi
 			;;
 
@@ -197,14 +196,19 @@ get_args() {
 
 main() {
 	get_args "$@"
-	[[ "$filename" == *.* ]] && ext="${filename##*.}"
-	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	check_ext
-	create_file
-	[[ -n "${mode:-}" ]] && chmod "$mode" "$filename"
-	[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
-	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
-	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
+	if [[ -d "$filename" ]]; then
+		printf "gen: cannot generate '%s': Is a directory" "$filename"
+		exit 1
+	else
+		[[ "$filename" == *.* ]] && ext="${filename##*.}"
+		[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
+		check_ext
+		create_file
+		[[ -n "${cust_mode:-${mode:-}}" ]] && chmod "${cust_mode:-${mode}}" "$filename"
+		[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
+		[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
+		[[ -z "${suppress:-}" ]] && "$editor" "$filename"
+	fi
 }
 
 main "$@"
