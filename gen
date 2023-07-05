@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.7.0 - July 4, 2023"
+version="Generate (gen) version: 1.7.1 - July 5, 2023"
 
 gen_templates() {
 	cat <<-EOF
@@ -110,7 +110,7 @@ usage() {
 }
 
 which_ed() {
-	if command -v "${VISUAL:-${EDITOR}}" &> /dev/null; then
+	if command -v "${VISUAL:-${EDITOR:-}}" &> /dev/null; then
 		editor="${VISUAL:-${EDITOR}}"
 	else
 		local editors=( nano vi emacs ed )
@@ -121,7 +121,7 @@ which_ed() {
 }
 
 create_file() {
-	if [[ -e "$filename" && -z "$force" ]]; then
+	if [[ -f "$filename" && -z "$force" ]]; then
 		read -erp "gen: overwrite '${filename}'? " overwrite
 		if [[ "${overwrite,,}" =~ ^y(es)?$ ]]; then
 			if ! touch "$filename"; then exit 1; fi
@@ -135,15 +135,15 @@ create_file() {
 
 check_ext() {
 	case "${ext:-}" in
-		awk) mode="u+x" ;;
+		awk) mode="u+rwx" ;;
 		c) format="c" ;;
 		jsx) format="jsx" ;;
 		html|htm) format="html" ;;
-		js) mode="u+x"; ext="node" ;;
-		pl) mode="u+x"; ext="perl" ;;
-		py) mode="u+x"; format="py" ;;
-		sh|bash) mode="u+x"; ext="bash" ;;
-		*sh) mode="u+x" ;;
+		js) mode="u+rwx"; ext="node" ;;
+		pl) mode="u+rwx"; ext="perl" ;;
+		py) mode="u+rwx"; format="py" ;;
+		sh|bash) mode="u+rwx"; ext="bash" ;;
+		*sh) mode="u+rwx" ;;
 		*)
 			if [[ -n "${template:-}" ]]; then
 				format="templates"
@@ -163,7 +163,7 @@ get_args() {
 	while getopts ':hxqfdsc:ve:' option; do
 		case "$option" in
 			h) usage ;;
-			x) mode="u+x" ;;
+			x) mode="u+rwx" ;;
 			q) quiet=true ;;
 			f) force=true ;;
 			d) default=true ;;
@@ -186,29 +186,26 @@ get_args() {
 		esac
 	done
 	shift "$((OPTIND -1))"
-	if [[ -n "${1:-}" ]]; then
-		filename="$1"
-	else
+	if [[ -z "${1:-}" ]]; then
 		printf "gen: Must provide filename.\n"
 		printf "Try 'gen -h' for more information.\n"; exit 1
+	elif [[ -d "$1" ]]; then
+		printf "gen: cannot generate '%s': Is a directory\n" "$1"; exit 1
+	else
+		filename="$1"
 	fi
 }
 
 main() {
 	get_args "$@"
-	if [[ -d "$filename" ]]; then
-		printf "gen: cannot generate '%s': Is a directory" "$filename"
-		exit 1
-	else
-		[[ "$filename" == *.* ]] && ext="${filename##*.}"
-		[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-		check_ext
-		create_file
-		[[ -n "${cust_mode:-${mode:-}}" ]] && chmod "${cust_mode:-${mode}}" "$filename"
-		[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
-		[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
-		[[ -z "${suppress:-}" ]] && "$editor" "$filename"
-	fi
+	create_file
+	[[ "$filename" == *.* ]] && ext="${filename##*.}"
+	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
+	check_ext
+	chmod "${cust_mode:-${mode:-u+rw}}" "$filename"
+	[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
+	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
+	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
 }
 
 main "$@"
