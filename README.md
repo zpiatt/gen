@@ -23,4 +23,4 @@ Recently added:
 
 ### More: \[[Installation](https://github.com/zpiatt/gen/wiki/Installation)\] \[[Templates](https://github.com/zpiatt/gen/wiki/Templates)\] \[[Editors](https://github.com/zpiatt/gen/wiki/Editors)\] \[[Wiki](https://github.com/zpiatt/gen/wiki)\]
 
-<img src="https://i.imgur.com/q7E4yXi.gif" alt="gen" align="left" height="500px">
+<img src="https://i.imgur.com/DeZzcoo.gif" alt="gen" align="left" height="500px">
