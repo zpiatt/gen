@@ -18,75 +18,79 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.7.1 - July 5, 2023"
+version="Generate (gen) version: 1.8.0 - July 16, 2023"
 
-gen_templates() {
-	cat <<-EOF
-	${template}
-	EOF
-}
+gen_template() {
+	case "${format:-sh}" in
+		cust_template)
+			cat <<-EOF
+			${cust_template}
+			EOF
+		;;
 
-gen_py() {
-	cat <<-EOF
-	#!/usr/bin/env python
-	def main():
+		py)
+			cat <<-EOF
+			#!/usr/bin/env python
+			def main():
 
-	if __name__ == '__main__':
-	    main()
-	EOF
-}
+			if __name__ == '__main__':
+			    main()
+			EOF
+		;;
 
-gen_c() {
-	cat <<-EOF
-	#include <stdio.h>
-	#include <stdlib.h>
+		c)
+			cat <<-EOF
+			#include <stdio.h>
+			#include <stdlib.h>
 
-	int main() {
+			int main() {
+			
+			    return 0;
+			}
+			EOF
+		;;
 
-	    return 0;
-	}
-	EOF
-}
+		sh)
+			cat <<-EOF
+			#!/usr/bin/env ${ext}
 
-gen_sh() {
-	cat <<-EOF
-	#!/usr/bin/env ${ext}
+			EOF
+		;;
 
-	EOF
-}
+		html)
+			cat <<-EOF
+			<!DOCTYPE html>
+			<html lang="en">
+			  <head>
+		        <meta charset="UTF-8">
+		        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+		        <title>HTML 5 Boilerplate</title>
+		        <link rel="stylesheet" href="style.css">
+			  </head>
+			  <body>
+			       <script src="index.js"></script>
+			  </body>
+			</html>
+			EOF
+		;;
 
-gen_html() {
-	cat <<-EOF
-	<!DOCTYPE html>
-	<html lang="en">
-	  <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>HTML 5 Boilerplate</title>
-        <link rel="stylesheet" href="style.css">
-	  </head>
-	  <body>
-	       <script src="index.js"></script>
-	  </body>
-	</html>
-	EOF
-}
+		jsx)
+			local basename="${filename##*/}"
+			cat <<-EOF
+			import React from 'react';
 
-gen_jsx() {
-	local basename="${filename##*/}"
-	cat <<-EOF
-	import React from 'react';
+			function ${basename%.*}() {
+			  return (
+			    <>
+			    </>
+			);
+			}
 
-	function ${basename%.*}() {
-	  return (
-	    <>
-	    </>
-	);
-	}
-
-	export default ${basename%.*};
-	EOF
+			export default ${basename%.*};
+			EOF
+		;;
+	esac
 }
 
 usage() {
@@ -144,19 +148,14 @@ check_ext() {
 		py) mode="u+rwx"; format="py" ;;
 		sh|bash) mode="u+rwx"; ext="bash" ;;
 		*sh) mode="u+rwx" ;;
-		*)
-			if [[ -n "${template:-}" ]]; then
-				format="templates"
-			else
-				quiet=true
-			fi
-		;;
+		*) quiet=true ;;
 	esac
 }
 
 get_template() {
 	[[ -f "$HOME/.gen/templates/template.$ext" ]] && \
-		template="$(< "$HOME/.gen/templates/template.$ext")"
+		cust_template="$(< "$HOME/.gen/templates/template.$ext")" && \
+		format="cust_template"
 }
 
 get_args() {
@@ -174,23 +173,23 @@ get_args() {
 				if command -v "$OPTARG" &> /dev/null; then
 					editor="$OPTARG"
 				else
-					printf "gen: %s: not found\n" "$OPTARG"
-					printf "Try 'gen -h' for more information.\n"; exit 1
+					printf "gen: %s: not found\n" "$OPTARG" >&2
+					printf "Try 'gen -h' for more information.\n" >&2; exit 1
 				fi
 			;;
 
 			?)
-				printf "gen: invalid option -- '%s'\n" "$OPTARG"
-				printf "Try 'gen -h' for more information.\n"; exit 1
+				printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
+				printf "Try 'gen -h' for more information.\n" >&2; exit 1
 			;;
 		esac
 	done
 	shift "$((OPTIND -1))"
 	if [[ -z "${1:-}" ]]; then
-		printf "gen: Must provide filename.\n"
-		printf "Try 'gen -h' for more information.\n"; exit 1
+		printf "gen: Must provide filename.\n" >&2
+		printf "Try 'gen -h' for more information.\n" >&2; exit 1
 	elif [[ -d "$1" ]]; then
-		printf "gen: cannot generate '%s': Is a directory\n" "$1"; exit 1
+		printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 1
 	else
 		filename="$1"
 	fi
@@ -201,9 +200,9 @@ main() {
 	create_file
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	check_ext
+	[[ -z "$cust_template" ]] && check_ext
 	chmod "${cust_mode:-${mode:-u+rw}}" "$filename"
-	[[ -z "${quiet:-}" ]] && gen_"${format:-sh}" > "$filename"
+	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
 }
