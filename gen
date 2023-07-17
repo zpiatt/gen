@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 1.8.1 - July 16, 2023"
+readonly version="Generate (gen) version: 1.8.2 - July 17, 2023"
 
 gen_template() {
 	case "${format:-${ext:-}}" in
