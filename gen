@@ -18,10 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-version="Generate (gen) version: 1.8.0 - July 16, 2023"
+readonly version="Generate (gen) version: 1.8.1 - July 16, 2023"
 
 gen_template() {
-	case "${format:-sh}" in
+	case "${format:-}" in
 		cust_template)
 			cat <<-EOF
 			${cust_template}
@@ -47,13 +47,6 @@ gen_template() {
 			
 			    return 0;
 			}
-			EOF
-		;;
-
-		sh)
-			cat <<-EOF
-			#!/usr/bin/env ${ext}
-
 			EOF
 		;;
 
@@ -88,6 +81,13 @@ gen_template() {
 			}
 
 			export default ${basename%.*};
+			EOF
+		;;
+
+		*)
+			cat <<-EOF
+			#!/usr/bin/env ${ext}
+
 			EOF
 		;;
 	esac
@@ -127,18 +127,15 @@ which_ed() {
 create_file() {
 	if [[ -f "$filename" && -z "$force" ]]; then
 		read -erp "gen: overwrite '${filename}'? " overwrite
-		if [[ "${overwrite,,}" =~ ^y(es)?$ ]]; then
-			if ! touch "$filename"; then exit 1; fi
-		else
-			exit 0
-		fi
-	else
-		if ! touch "$filename"; then exit 1; fi
+		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
+	fi
+	if ! (: > "$filename") &> /dev/null; then 
+		printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
 	fi
 }
 
 check_ext() {
-	case "${ext:-}" in
+	case "$ext" in
 		awk) mode="u+rwx" ;;
 		c) format="c" ;;
 		jsx) format="jsx" ;;
@@ -153,8 +150,8 @@ check_ext() {
 }
 
 get_template() {
-	[[ -f "$HOME/.gen/templates/template.$ext" ]] && \
-		cust_template="$(< "$HOME/.gen/templates/template.$ext")" && \
+	[[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
+		cust_template="$(< "${HOME}/.gen/templates/template.${ext}")" && \
 		format="cust_template"
 }
 
@@ -184,7 +181,7 @@ get_args() {
 			;;
 		esac
 	done
-	shift "$((OPTIND -1))"
+	shift "$(( OPTIND -1 ))"
 	if [[ -z "${1:-}" ]]; then
 		printf "gen: Must provide filename.\n" >&2
 		printf "Try 'gen -h' for more information.\n" >&2; exit 1
@@ -200,7 +197,7 @@ main() {
 	create_file
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	[[ -z "$cust_template" ]] && check_ext
+	[[ -z "${cust_template:-}" && -n "${ext:-}" ]] && check_ext
 	chmod "${cust_mode:-${mode:-u+rw}}" "$filename"
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
