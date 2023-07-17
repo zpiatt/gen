@@ -16,7 +16,7 @@
 - Use `bash` built-ins wherever possible.
 - Try not to pipe (`|`) at all.
 - Limit usage of external commands `$(cmd)`.
-- Indent 4 spaces.
+- Use tab character for indentation.
 - Use [snake_case](https://en.wikipedia.org/wiki/Snake_case) for function
   and variable names.
 - Keep lines below `100` characters long.
@@ -38,12 +38,12 @@ shellcheck gen
 - Don’t use GNU conventions in commands.
     - Use POSIX arguments and flags.
 - Don’t use `cut`.
-    - Use `bash`'s built-in [parameter expansion](http://wiki.bash-hackers.org/syntax/pe).
+    - Use `bash`'s built-in [parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 - Don’t use `echo`.
     - Use `printf "%s\n"`
 - Don’t use `bc`.
 - Don’t use `sed`.
-    - Use `bash`'s built-in [parameter expansion](http://wiki.bash-hackers.org/syntax/pe).
+    - Use `bash`'s built-in [parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 - Don’t use `cat`.
     - Use `bash`'s built-in syntax (`file="$(< /path/to/file.txt)"`).
 - Don’t use `grep "pattern" | awk '{ printf }'`.

@@ -21,13 +21,8 @@
 readonly version="Generate (gen) version: 1.8.1 - July 16, 2023"
 
 gen_template() {
-	case "${format:-}" in
-		cust_template)
-			cat <<-EOF
-			${cust_template}
-			EOF
-		;;
-
+	case "${format:-${ext:-}}" in
+		cust_template) printf "%s\n" "${cust_template}" ;;
 		py)
 			cat <<-EOF
 			#!/usr/bin/env python
@@ -84,12 +79,7 @@ gen_template() {
 			EOF
 		;;
 
-		*)
-			cat <<-EOF
-			#!/usr/bin/env ${ext}
-
-			EOF
-		;;
+		*) printf "#!/usr/bin/env %s\n" "$ext" ;;
 	esac
 }
 
@@ -135,10 +125,8 @@ create_file() {
 }
 
 check_ext() {
-	case "$ext" in
+	case "${ext:-}" in
 		awk) mode="u+rwx" ;;
-		c) format="c" ;;
-		jsx) format="jsx" ;;
 		html|htm) format="html" ;;
 		js) mode="u+rwx"; ext="node" ;;
 		pl) mode="u+rwx"; ext="perl" ;;
@@ -197,7 +185,7 @@ main() {
 	create_file
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	[[ -z "${cust_template:-}" && -n "${ext:-}" ]] && check_ext
+	[[ -z "${cust_template:-}" ]] && check_ext
 	chmod "${cust_mode:-${mode:-u+rw}}" "$filename"
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed

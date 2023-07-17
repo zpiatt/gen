@@ -1,6 +1,4 @@
 # Generate
-<p align="left">A command line script template automation tool written in bash 3.2+</p>
-
 <p align="left">
 <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/zpiatt/gen"></a>
 <a href="https://github.com/zpiatt/gen/releases"><img src="https://img.shields.io/github/v/release/zpiatt/gen">
