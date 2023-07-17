@@ -20,8 +20,35 @@
 
 readonly version="Generate (gen) version: 1.8.2 - July 17, 2023"
 
+usage() {
+	cat <<-EOF
+	Usage: gen [OPTION]... [FILE]...
+	Generate FILE, input script template, and launch default editor.
+
+	  -x,   add execute to user permissions regardless of default
+	  -c,   customize file permissions ( gen -c 754 example.sh )
+	  -q,   quiet automatic input of script template
+	  -f,	overwrite existing file contents, never prompt
+	  -s,   suppress launch of editor
+	  -e,   manually select editor ( gen -e nano example.py )
+	  -d,   use default template despite available custom template
+	  -v,   display version number and exit
+	  -h,   display help and exit
+
+	Full documentation <https://github.com/zpiatt/gen>
+	EOF
+	exit 0
+}
+
+which_ed() {
+	local editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
+	for ed in "${editors[@]}"; do
+		editor="$(command -v "$ed" 2> /dev/null)" && return
+	done
+}
+
 gen_template() {
-	case "${format:-${ext:-}}" in
+	case "${format:-}" in
 		cust_template) printf "%s\n" "${cust_template}" ;;
 		py)
 			cat <<-EOF
@@ -83,50 +110,11 @@ gen_template() {
 	esac
 }
 
-usage() {
-	cat <<-EOF
-	Usage: gen [OPTION]... [FILE]...
-	Generate FILE, input script template, and launch default editor.
-
-	  -x,   add execute to user permissions regardless of default
-	  -c,   customize file permissions ( gen -c 754 example.sh )
-	  -q,   quiet automatic input of script template
-	  -f,	overwrite existing file contents, never prompt
-	  -s,   suppress launch of editor
-	  -e,   manually select editor ( gen -e nano example.py )
-	  -d,   use default template despite available custom template
-	  -v,   display version number and exit
-	  -h,   display help and exit
-
-	Full documentation <https://github.com/zpiatt/gen>
-	EOF
-	exit 0
-}
-
-which_ed() {
-	if command -v "${VISUAL:-${EDITOR:-}}" &> /dev/null; then
-		editor="${VISUAL:-${EDITOR}}"
-	else
-		local editors=( nano vi emacs ed )
-		for ed in "${editors[@]}"; do
-			editor="$(command -v "$ed" 2> /dev/null)" && return
-		done
-	fi
-}
-
-create_file() {
-	if [[ -f "$filename" && -z "$force" ]]; then
-		read -erp "gen: overwrite '${filename}'? " overwrite
-		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
-	fi
-	if ! (: > "$filename") &> /dev/null; then 
-		printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
-	fi
-}
-
 check_ext() {
 	case "${ext:-}" in
 		awk) mode="u+rwx" ;;
+		c) format="c" ;;
+		jsx) format="jsx" ;;
 		html|htm) format="html" ;;
 		js) mode="u+rwx"; ext="node" ;;
 		pl) mode="u+rwx"; ext="perl" ;;
@@ -141,6 +129,16 @@ get_template() {
 	[[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
 		cust_template="$(< "${HOME}/.gen/templates/template.${ext}")" && \
 		format="cust_template"
+}
+
+create_file() {
+	if [[ -f "$filename" && -z "$force" ]]; then
+		read -erp "gen: overwrite '${filename}'? " overwrite
+		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
+	fi
+	if ! (: > "$filename") &> /dev/null; then 
+		printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
+	fi
 }
 
 get_args() {
