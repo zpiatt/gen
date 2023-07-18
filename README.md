@@ -7,15 +7,12 @@
 Generate (gen) is a command line script template automation tool written in `bash 3.2+`. Generate automates the creation of script files, modifies file permissions, inputs custom and default script templates, and launches your favorite editor seamlessly.
 
 Upcoming features:
-  - I removed the `-m` option and `create_multi` function with release v1.6.4; I'm working to re-add this feature without the prior issues. 
   - Continued bug testing/verifying functionality across Linux/BSD.
 
 Recently added:
+  - Added input validation for custom mode selections.
+    - It ain't pretty, but if an invalid mode if given no changes will be made (this includes overwriting existing files).
   - Several bug fixes (check release notes for details).
-  - Added man page to install.
-    - Originally created man page using help2man. I've added a lot of detail, but am working on making this more robust.
-  - Added `-f` option to overwrite existing filename without prompt (similar to `rm -f`).
-    - Without this option, `gen` will also now prompt a user to overwrite if a file exists.
 
  Please send me any ideas for increasing portability, or adding features!
 

@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 1.8.2 - July 17, 2023"
+readonly version="Generate (gen) version: 1.8.3 - July 17, 2023"
 
 usage() {
 	cat <<-EOF
@@ -49,7 +49,7 @@ which_ed() {
 
 gen_template() {
 	case "${format:-}" in
-		cust_template) printf "%s\n" "${cust_template}" ;;
+		custom_template) printf "%s\n" "${custom_template}" ;;
 		py)
 			cat <<-EOF
 			#!/usr/bin/env python
@@ -110,6 +110,26 @@ gen_template() {
 	esac
 }
 
+create_file() {
+	if [[ -f "$filename" && -z "$force" ]]; then
+		read -erp "gen: overwrite '${filename}'? " overwrite
+		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
+	fi
+	if [[ -f "$filename" ]]; then
+		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 1
+		if ! (: > "$filename") &> /dev/null; then
+			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
+		fi
+	else
+		if ! (: > "$filename") &> /dev/null; then
+			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
+		fi
+		if ! chmod "${custom_mode:-${mode:-u+rw}}" "$filename"; then
+			rm -f "$filename"; exit 1
+		fi
+	fi
+}
+
 check_ext() {
 	case "${ext:-}" in
 		awk) mode="u+rwx" ;;
@@ -127,18 +147,8 @@ check_ext() {
 
 get_template() {
 	[[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
-		cust_template="$(< "${HOME}/.gen/templates/template.${ext}")" && \
-		format="cust_template"
-}
-
-create_file() {
-	if [[ -f "$filename" && -z "$force" ]]; then
-		read -erp "gen: overwrite '${filename}'? " overwrite
-		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
-	fi
-	if ! (: > "$filename") &> /dev/null; then 
-		printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1
-	fi
+		custom_template="$(< "${HOME}/.gen/templates/template.${ext}")" && \
+		format="custom_template"
 }
 
 get_args() {
@@ -150,15 +160,14 @@ get_args() {
 			f) force=true ;;
 			d) default=true ;;
 			s) suppress=true ;;
-			c) cust_mode="$OPTARG" ;;
+			c) custom_mode="$OPTARG" ;;
 			v) printf "%s\n" "$version"; exit 0 ;;
 			e)
-				if command -v "$OPTARG" &> /dev/null; then
-					editor="$OPTARG"
-				else
+				if ! command -v "$OPTARG" &> /dev/null; then
 					printf "gen: %s: not found\n" "$OPTARG" >&2
 					printf "Try 'gen -h' for more information.\n" >&2; exit 1
 				fi
+				editor="$OPTARG"
 			;;
 
 			?)
@@ -173,18 +182,16 @@ get_args() {
 		printf "Try 'gen -h' for more information.\n" >&2; exit 1
 	elif [[ -d "$1" ]]; then
 		printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 1
-	else
-		filename="$1"
 	fi
+	filename="$1"
 }
 
 main() {
 	get_args "$@"
-	create_file
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	[[ -z "${cust_template:-}" ]] && check_ext
-	chmod "${cust_mode:-${mode:-u+rw}}" "$filename"
+	[[ -z "${custom_template:-}" ]] && check_ext
+	create_file
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
