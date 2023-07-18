@@ -11,7 +11,9 @@ Upcoming features:
 
 Recently added:
   - Added input validation for custom mode selections.
-    - It ain't pretty, but if an invalid mode if given no changes will be made (this includes overwriting existing files).
+    - If a filename exists, and an overwrite is confirmed, `chmod` will be attempted before truncating the file. In case of an error `gen` will exit without making any changes.
+    - If the filename doesn't exist, it must be created before `chmod` can be validated. In case of an error, the new file will be removed.
+    - In either case, the `stderr` of `chmod`` will be displayed. This should catch permission errors at this step as well.
   - Several bug fixes (check release notes for details).
 
  Please send me any ideas for increasing portability, or adding features!
