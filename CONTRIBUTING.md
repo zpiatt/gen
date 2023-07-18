@@ -54,8 +54,8 @@ shellcheck gen
 
 ### If Statements
 
-If the test only has one command inside of it; use the compact test
-syntax. Otherwise the normal `if`/`fi` is just fine.
+If the test only has one condition; use the compact test
+syntax. If your test requires an `elif` or `else`, use the normal `if`/`fi`.
 
 ```sh
 # Bad
@@ -69,6 +69,11 @@ fi
 # Also good (Use this for longer lines).
 [[ "$var" ]] && \
     printf "%s\n" "$var"
+
+# Also good also good for a couple of commands
+[[ "$var" ]] && {
+    printf "%s\n" "$var"
+    return 0; }
 ```
 
 

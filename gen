@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 1.8.4 - July 18, 2023"
+readonly version="Generate (gen) version: 1.8.5 - July 18, 2023"
 
 usage() {
 	cat <<-EOF
@@ -172,12 +172,10 @@ get_args() {
 		esac
 	done
 	shift "$(( OPTIND -1 ))"
-	if [[ -z "${1:-}" ]]; then
+	[[ -z "${1:-}" ]] && {
 		printf "gen: Must provide filename.\n" >&2
-		printf "Try 'gen -h' for more information.\n" >&2; exit 1
-	elif [[ -d "$1" ]]; then
-		printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 1
-	fi
+		printf "Try 'gen -h' for more information.\n" >&2; exit 1; }
+	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 1; }
 	filename="$1"
 }
 
