@@ -188,6 +188,7 @@ main() {
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
+	return 0
 }
 
 main "$@"
