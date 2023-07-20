@@ -167,7 +167,7 @@ get_args() {
 
 			?)
 				printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
-				printf "Try 'gen -h' for more information.\n" >&2; exit 127
+				printf "Try 'gen -h' for more information.\n" >&2; exit 2
 			;;
 		esac
 	done
