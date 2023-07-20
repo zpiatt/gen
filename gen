@@ -116,13 +116,13 @@ create_file() {
 		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
 	fi
 	if [[ -f "$filename" ]]; then
-		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 1
+		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 126
 		(: > "$filename") &> /dev/null || {
-			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1; }
+			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 126; }
 	else
 		(: > "$filename") &> /dev/null || {
-			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 1; }
-		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || { rm -f "$filename"; exit 1; }
+			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 126; }
+		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || { rm -f "$filename"; exit 126; }
 	fi
 }
 
@@ -161,21 +161,21 @@ get_args() {
 			e)
 				command -v "$OPTARG" &> /dev/null || {
 					printf "gen: %s: not found\n" "$OPTARG" >&2
-					printf "Try 'gen -h' for more information.\n" >&2; exit 1; }
+					printf "Try 'gen -h' for more information.\n" >&2; exit 127; }
 				editor="$OPTARG"
 			;;
 
 			?)
 				printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
-				printf "Try 'gen -h' for more information.\n" >&2; exit 1
+				printf "Try 'gen -h' for more information.\n" >&2; exit 127
 			;;
 		esac
 	done
 	shift "$(( OPTIND -1 ))"
 	[[ -z "${1:-}" ]] && {
 		printf "gen: Must provide filename.\n" >&2
-		printf "Try 'gen -h' for more information.\n" >&2; exit 1; }
-	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 1; }
+		printf "Try 'gen -h' for more information.\n" >&2; exit 2; }
+	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2; }
 	filename="$1"
 }
 
