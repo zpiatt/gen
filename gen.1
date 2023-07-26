@@ -1,114 +1,86 @@
 .TH GENERATE "1" "July 2023" "gen version: 1.8.6" "User Commands"
-
 .SH NAME
 Generate \- create script using templates.
-
 .SH SYNOPSIS
 .B gen
 [\fI\,OPTION\/\fR]... [\fI\,FILE\/\fR]...
-
 .SH DESCRIPTION
 Create FILE, modify permissions, redirect script template to FILE, and launch default editor.
-
 .BR
 .TP
 .B chmod
 is used to set FILE permissions; if errors occur, an error message from\fB\ chmod\fR \c
 will be displayed.
-
 .BR
 .TP
 A FILE argument that exists will not be overwritten/modified, unless \fB\-f\fR is supplied.
-
 .SH OPTIONS
 .TP
 \fB\-c\fR,
 customize FILE permissions (\fB\ gen -c\fR 754 example.sh )
-
 .BR
 .TP
 \fB\-d\fR,
 use default template despite available custom template
-
 .BR
 .TP
 \fB\-e\fR,
 manually select editor (\fB\ gen -e nano\fR example.py )
-
 .BR
 .TP
 \fB\-f\fR,
 overwrite existing FILE contents, never prompt
-
 .BR
 .TP
 \fB\-h\fR,
 display help and exit
-
 .BR
 .TP
 \fB\-q\fR,
 quiet automatic input of script template
-
 .BR
 .TP
 \fB\-s\fR,
 suppress editor launch
-
 .BR
 .TP
 \fB\-v\fR,
 display version number and exit
-
 .SH "EDITORS"
 .B gen
 checks the variables VISUAL & EDITOR (in order), if non-empty and found in PATH
 .B gen
 will use the value of these variables.
-
 .BR
 .TP
-Otherwise, PATH will be checked for\fB\ nano, vi, emacs, ed\fR (in order). \c
-The first command in PATH will be used. \c
-If no command is found,\fB\ gen\fR\ with exit with exit status 127 \c 
-(see also\fB\ EXIT STATUS\fR\ below).
-
+Otherwise, PATH will be checked for\fB\ nano, vi, emacs, ed\fR (in order). The first command in PATH will be used. If no command is found,\fB\ gen\fR\ with exit with exit status 127 (see also\fB\ EXIT STATUS\fR\ below).
 .BR
 .TP
 If argument \fB\-e\fR is given,\fB\ gen\fR with search PATH for OPTARG.
-
 .SH "EXIT STATUS"
 If the exit statement is used with a value, then\fB\ gen\fR\ exits with the numeric value given to it.
-
 .BR
 .TP
 Otherwise, if there were no problems during execution,\fB\ gen\fR exits with the value\fB\ 0\fR.
-
 .BR
 .TP
 If an error occurs,\fB\ gen\fR exits with a non-zero value that may provide some context as below:
-
 .BR
 .TP
 \fB2\fR,
 General error, typically mistyped or incorrect argument.
-
 .BR
 .TP
 \fB126\fR,
 This is a permission error, or command found that is not executable.
-
 .BR
 .TP
 \fB127\fR,
 Command does not exist or command not found in PATH.
-
 .SH AUTHOR
 Written by Zac Piatt.
-
 .SH "REPORTING BUGS"
 Report any bugs to <zpiatt@protonmail.com>
-
 .SH COPYRIGHT
 Copyright \(co 2023 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
