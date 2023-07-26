@@ -18,33 +18,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 1.8.5 - July 18, 2023"
+readonly version="Generate (gen) version: 1.8.6 - July 25, 2023"
 
 usage() {
 	cat <<-EOF
 	Usage: gen [OPTION]... [FILE]...
 	Generate FILE, input script template, and launch default editor.
 
-	  -x,   add execute to user permissions regardless of default
 	  -c,   customize file permissions ( gen -c 754 example.sh )
-	  -q,   quiet automatic input of script template
-	  -f,	overwrite existing file contents, never prompt
-	  -s,   suppress launch of editor
-	  -e,   manually select editor ( gen -e nano example.py )
 	  -d,   use default template despite available custom template
-	  -v,   display version number and exit
+	  -e,   manually select editor ( gen -e nano example.py )
+	  -f,	overwrite existing file contents, never prompt
 	  -h,   display help and exit
+	  -q,   quiet automatic input of script template
+	  -s,   suppress launch of editor
+	  -v,   display version number and exit
 
 	Full documentation <https://github.com/zpiatt/gen>
+	or available locally via: info generate
 	EOF
 	exit 0
 }
 
 which_ed() {
 	local editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
+
 	for ed in "${editors[@]}"; do
-		editor="$(command -v "$ed" 2> /dev/null)" && return
+			editor="$(command -v "$ed" 2> /dev/null)" && return 0
 	done
+
+	printf "No editor found in PATH.\n" >&2
+	printf "Try 'gen -h' for more information.\n" >&2; exit 127
 }
 
 gen_template() {
@@ -115,6 +119,7 @@ create_file() {
 		read -erp "gen: overwrite '${filename}'? " overwrite
 		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
 	fi
+
 	if [[ -f "$filename" ]]; then
 		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 126
 		(: > "$filename") &> /dev/null || {
@@ -151,7 +156,6 @@ get_args() {
 	while getopts ':hxqfdsc:ve:' option; do
 		case "$option" in
 			h) usage ;;
-			x) mode="u+rwx" ;;
 			q) quiet=true ;;
 			f) force=true ;;
 			d) default=true ;;
@@ -171,23 +175,35 @@ get_args() {
 			;;
 		esac
 	done
+
 	shift "$(( OPTIND -1 ))"
+
 	[[ -z "${1:-}" ]] && {
 		printf "gen: Must provide filename.\n" >&2
 		printf "Try 'gen -h' for more information.\n" >&2; exit 2; }
+
 	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2; }
+
 	filename="$1"
 }
 
 main() {
 	get_args "$@"
+
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
+
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
+
 	[[ -z "${custom_template:-}" ]] && check_ext
+
 	create_file
+
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
+
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
+
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
+
 	return 0
 }
 
