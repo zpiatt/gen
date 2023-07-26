@@ -42,11 +42,9 @@ usage() {
 
 which_ed() {
 	local editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
-
 	for ed in "${editors[@]}"; do
-			editor="$(command -v "$ed" 2> /dev/null)" && return 0
+		editor="$(command -v "$ed" 2> /dev/null)" && return 0
 	done
-
 	printf "No editor found in PATH.\n" >&2
 	printf "Try 'gen -h' for more information.\n" >&2; exit 127
 }
@@ -119,7 +117,6 @@ create_file() {
 		read -erp "gen: overwrite '${filename}'? " overwrite
 		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
 	fi
-
 	if [[ -f "$filename" ]]; then
 		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 126
 		(: > "$filename") &> /dev/null || {
@@ -175,35 +172,23 @@ get_args() {
 			;;
 		esac
 	done
-
 	shift "$(( OPTIND -1 ))"
-
 	[[ -z "${1:-}" ]] && {
 		printf "gen: Must provide filename.\n" >&2
 		printf "Try 'gen -h' for more information.\n" >&2; exit 2; }
-
 	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2; }
-
 	filename="$1"
 }
 
 main() {
 	get_args "$@"
-
 	[[ "$filename" == *.* ]] && ext="${filename##*.}"
-
 	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-
 	[[ -z "${custom_template:-}" ]] && check_ext
-
 	create_file
-
 	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
-
 	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
-
 	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
-
 	return 0
 }
 
