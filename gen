@@ -18,119 +18,126 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.1 - July 30, 2023"
+readonly version="Generate (gen) version: 2.0.2 - July 31, 2023"
 
 usage() {
-	cat <<-EOF
-	Usage: gen [OPTION]... [FILE]...
-	Generate FILE, input script template, and launch default editor.
-
-	  -c,   customize file permissions ( gen -c 754 example.sh )
-	  -d,   use default template despite available custom template
-	  -e,   manually select editor ( gen -e nano example.py )
-	  -f,	overwrite existing file contents, never prompt
-	  -h,   display help and exit
-	  -q,   quiet automatic input of script template
-	  -s,   suppress launch of editor
-	  -v,   display version number and exit
-
-	Full documentation <https://github.com/zpiatt/gen>
-	or available locally via: info generate
-	EOF
-	exit 0
+    printf "Usage: gen [OPTION]... [FILE]...\n"
+    printf "Generate FILE, input script template, and launch default editor.\n\n"
+    printf "  -c,   customize file permissions ( gen -c 754 example.sh )\n"
+    printf "  -d,   use default template despite available custom template\n"
+    printf "  -e,   manually select editor ( gen -e nano example.py )\n"
+    printf "  -f,	overwrite existing file contents, never prompt\n"
+    printf "  -h,   display help and exit\n"
+    printf "  -q,   quiet automatic input of script template\n"
+    printf "  -s,   suppress launch of editor\n"
+    printf "  -v,   display version number and exit\n\n"
+    printf "Full documentation <https://github.com/zpiatt/gen>\n"
+    printf "or available locally via: info generate\n"
+    exit 0
 }
 
 which_ed() {
-	local editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
-	for ed in "${editors[@]}"; do
-		[[ -n "$ed" ]] && editor="$(command -v "$ed" 2> /dev/null)" && return 0
-	done
-	printf "No editor found in PATH.\n" >&2
-	printf "Try 'gen -h' for more information.\n" >&2; exit 127
+    local editors ed
+    editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
+    
+    for ed in "${editors[@]}"; do
+        if [[ -n "$ed" ]]; then
+            editor="$(command -v "$ed" 2> /dev/null)" && return 0
+        fi
+    done
+    
+    printf "No editor found in PATH.\n" >&2
+    printf "Try 'gen -h' for more information.\n" >&2; exit 127
 }
 
 gen_template() {
-	[[ -n "${template:-}" ]] && {
-		local basename="${filename##*/}"
-		printf "%s\n" "${template//basename/${basename%.*}}"; return 0; }
-	
-	printf "#!/usr/bin/env %s\n" "$ext"
+    if [[ -n "${template:-}" ]]; then
+        local basename="${file##*/}"
+        printf "%s\n" "${template//basename/${basename%.*}}"
+    else
+        printf "#!/usr/bin/env %s\n" "$ext"
+    fi
 }
 
 create_file() {
-	if [[ -f "$filename" && -z "$force" ]]; then
-		read -erp "gen: overwrite '${filename}'? " overwrite
-		[[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
-	fi
-	if [[ -f "$filename" ]]; then
-		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || exit 126
-		(: > "$filename") &> /dev/null || {
-			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 126; }
-	else
-		(: > "$filename") &> /dev/null || {
-			printf "gen: %s: Permission denied\n" "$filename" >&2; exit 126; }
-		chmod "${custom_mode:-${mode:-u+rw}}" "$filename" || { rm -f "$filename"; exit 126; }
-	fi
+    if [[ -f "$file" && -z "$force" ]]; then
+        read -erp "gen: overwrite '${file}'? " overwrite
+        [[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
+    fi
+    
+    if [[ -f "$file" ]]; then
+        chmod "${custom_mode:-${mode:-u+rw}}" "$file" || exit 126
+        (:>"$file") &> /dev/null || { printf "gen: %s: Permission denied\n" "$file" >&2; exit 126; }
+    else
+        (:>"$file") &> /dev/null || { printf "gen: %s: Permission denied\n" "$file" >&2; exit 126; }
+        chmod "${custom_mode:-${mode:-u+rw}}" "$file" || { rm -f "$file"; exit 126; }
+    fi
 }
 
 check_ext() {
-	case "${ext:-}" in
-		py) mode="u+rwx" ;;
-		awk) mode="u+rwx" ;;
-		js) mode="u+rwx"; ext="node" ;;
-		pl) mode="u+rwx"; ext="perl" ;;
-		sh|bash) mode="u+rwx"; ext="bash" ;;
-		*sh) mode="u+rwx" ;;
-		*) [[ -z "$template" ]] && quiet=true ;;
-	esac
+    case "${ext:-}" in
+        py) mode="u+rwx" ;;
+        awk) mode="u+rwx" ;;
+        js) mode="u+rwx"; ext="node" ;;
+        pl) mode="u+rwx"; ext="perl" ;;
+        sh|bash) mode="u+rwx"; ext="bash" ;;
+        *sh) mode="u+rwx" ;;
+        *) [[ -z "$template" ]] && quiet=true ;;
+    esac
 }
 
 get_template() {
-	[[ -f "${HOME}/.gen/templates/template.${ext}" ]] && {
-		template="$(< "${HOME}/.gen/templates/template.${ext}")"; }
+    [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
+        template="$(< "${HOME}/.gen/templates/template.${ext}")"
 }
 
 get_args() {
-	while getopts ':hqfdsc:ve:' option; do
-		case "$option" in
-			h) usage ;;
-			q) quiet=true ;;
-			f) force=true ;;
-			d) default=true ;;
-			s) suppress=true ;;
-			c) custom_mode="$OPTARG" ;;
-			v) printf "%s\n" "$version"; exit 0 ;;
-			e)
-				command -v "$OPTARG" &> /dev/null || {
-					printf "gen: %s: not found\n" "$OPTARG" >&2
-					printf "Try 'gen -h' for more information.\n" >&2; exit 127; }
-				editor="$OPTARG"
-			;;
+    while getopts ':hqfdsc:ve:' option; do
+        case "$option" in
+            h) usage ;;
+            q) quiet=true ;;
+            f) force=true ;;
+            d) default=true ;;
+            s) suppress=true ;;
+            c) custom_mode="$OPTARG" ;;
+            v) printf "%s\n" "$version"; exit 0 ;;
+            e)
+                if command -v "$OPTARG" &> /dev/null; then
+                    editor="$OPTARG"
+                else
+                    printf "gen: %s: not found\n" "$OPTARG" >&2
+                    printf "Try 'gen -h' for more information.\n" >&2; exit 127
+                fi
+            ;;
 
-			?)
-				printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
-				printf "Try 'gen -h' for more information.\n" >&2; exit 2
-			;;
-		esac
-	done
-	shift "$(( OPTIND -1 ))"
-	[[ -z "${1:-}" ]] && {
-		printf "gen: Must provide filename.\n" >&2
-		printf "Try 'gen -h' for more information.\n" >&2; exit 2; }
-	[[ -d "$1" ]] && { printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2; }
-	filename="$1"
+            ?)
+                printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
+                printf "Try 'gen -h' for more information.\n" >&2; exit 2
+            ;;
+        esac
+    done
+    shift "$(( OPTIND -1 ))"
+    
+    if [[ -z "${1:-}" ]]; then
+        printf "gen: Must provide filename.\n" >&2
+        printf "Try 'gen -h' for more information.\n" >&2; exit 2
+    elif [[ -d "$1" ]]; then
+        printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2
+    else
+        file="$1"
+    fi
 }
 
 main() {
-	get_args "$@"
-	[[ "$filename" == *.* ]] && ext="${filename##*.}"
-	[[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
-	check_ext
-	create_file
-	[[ -z "${quiet:-}" ]] && gen_template > "$filename"
-	[[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
-	[[ -z "${suppress:-}" ]] && "$editor" "$filename"
-	return 0
+    get_args "$@"
+    [[ "$file" == *.* ]] && ext="${file##*.}"
+    [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
+    check_ext
+    create_file
+    [[ -z "${quiet:-}" ]] && gen_template > "$file"
+    [[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
+    [[ -z "${suppress:-}" ]] && "$editor" "$file"
+    return 0
 }
 
 main "$@"

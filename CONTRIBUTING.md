@@ -16,7 +16,7 @@
 - Use `bash` built-ins wherever possible.
 - Try not to pipe (`|`) at all.
 - Limit usage of external commands `$(cmd)`.
-- Use tab character for indentation.
+- Indent 4 spaces.
 - Use [snake_case](https://en.wikipedia.org/wiki/Snake_case) for function
   and variable names.
 - Keep lines below `100` characters long.
@@ -54,8 +54,8 @@ shellcheck gen
 
 ### If Statements
 
-If the test only has one condition; use the compact test
-syntax. If your test requires an `elif` or `else`, use the normal `if`/`fi`.
+If the test only has one command inside of it; use the compact test
+syntax. Otherwise the normal `if`/`fi` is just fine.
 
 ```sh
 # Bad
@@ -69,11 +69,6 @@ fi
 # Also good (Use this for longer lines).
 [[ "$var" ]] && \
     printf "%s\n" "$var"
-
-# Also good also good for a couple of commands
-[[ "$var" ]] && {
-    printf "%s\n" "$var"
-    return 0; }
 ```
 
 
