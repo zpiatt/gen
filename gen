@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.0 - July 30, 2023"
+readonly version="Generate (gen) version: 2.0.1 - July 30, 2023"
 
 usage() {
 	cat <<-EOF
@@ -50,14 +50,11 @@ which_ed() {
 }
 
 gen_template() {
-	case "${format:-}" in
-		template)
-			local basename="${filename##*/}"
-			printf "%s\n" "${template//basename/${basename%.*}}"
-		;;
-
-		*) printf "#!/usr/bin/env %s\n" "$ext" ;;
-	esac
+	[[ -n "${template:-}" ]] && {
+		local basename="${filename##*/}"
+		printf "%s\n" "${template//basename/${basename%.*}}"; return 0; }
+	
+	printf "#!/usr/bin/env %s\n" "$ext"
 }
 
 create_file() {
@@ -78,10 +75,8 @@ create_file() {
 
 check_ext() {
 	case "${ext:-}" in
-		c) format="c" ;;
 		py) mode="u+rwx" ;;
 		awk) mode="u+rwx" ;;
-		htm|html) format="html" ;;
 		js) mode="u+rwx"; ext="node" ;;
 		pl) mode="u+rwx"; ext="perl" ;;
 		sh|bash) mode="u+rwx"; ext="bash" ;;
@@ -92,8 +87,7 @@ check_ext() {
 
 get_template() {
 	[[ -f "${HOME}/.gen/templates/template.${ext}" ]] && {
-		template="$(< "${HOME}/.gen/templates/template.${ext}")"
-		format="template"; }
+		template="$(< "${HOME}/.gen/templates/template.${ext}")"; }
 }
 
 get_args() {
