@@ -18,15 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.2 - July 31, 2023"
+readonly version="Generate (gen) version: 2.0.3 - August 3, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
     printf "Generate FILE, input script template, and launch default editor.\n\n"
-    printf "  -c,   customize file permissions ( gen -c 754 example.sh )\n"
+    printf "  -c,   change file permissions with octal mode bits ( gen -c 754 example.sh )\n"
     printf "  -d,   use default template despite available custom template\n"
     printf "  -e,   manually select editor ( gen -e nano example.py )\n"
-    printf "  -f,	overwrite existing file contents, never prompt\n"
+    printf "  -f,   overwrite existing file contents, never prompt\n"
     printf "  -h,   display help and exit\n"
     printf "  -q,   quiet automatic input of script template\n"
     printf "  -s,   suppress launch of editor\n"
@@ -60,7 +60,7 @@ gen_template() {
 }
 
 create_file() {
-    if [[ -f "$file" && -z "$force" ]]; then
+    if [[ -f "$file" && -z "${force:-}" ]]; then
         read -erp "gen: overwrite '${file}'? " overwrite
         [[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
     fi
@@ -92,15 +92,23 @@ get_template() {
 }
 
 get_args() {
-    while getopts ':hqfdsc:ve:' option; do
+    while getopts ':hqfdsvc:e:' option; do
         case "$option" in
             h) usage ;;
             q) quiet=true ;;
             f) force=true ;;
             d) default=true ;;
             s) suppress=true ;;
-            c) custom_mode="$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
+            c) 
+                if [[ "$OPTARG" =~ [0-7]{3} ]]; then
+                    custom_mode="$OPTARG" 
+                else
+                    printf "gen: invalid mode: %s\n" "$OPTARG" >&2
+                    printf "Try 'gen -h' for more information.\n" >&2; exit 2
+                fi
+            ;;
+
             e)
                 if command -v "$OPTARG" &> /dev/null; then
                     editor="$OPTARG"
