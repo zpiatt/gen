@@ -1,4 +1,4 @@
-.TH GENERATE "1" "July 2023" "gen version: 2.0.0" "User Commands"
+.TH GENERATE "1" "August 2023" "gen version: 2.0.3" "User Commands"
 .SH NAME
 Generate \- create script using templates.
 .SH SYNOPSIS
@@ -8,16 +8,11 @@ Generate \- create script using templates.
 Create FILE, modify permissions, redirect script template to FILE, and launch default editor.
 .BR
 .TP
-.B chmod
-is used to set FILE permissions; if errors occur, an error message from\fB\ chmod\fR \c
-will be displayed.
-.BR
-.TP
 A FILE argument that exists will not be overwritten/modified, unless \fB\-f\fR is supplied.
 .SH OPTIONS
 .TP
 \fB\-c\fR,
-customize FILE permissions (\fB\ gen -c\fR 754 example.sh )
+change FILE permissions with octal mode bits (\fB\ gen -c\fR 754 example.sh )
 .BR
 .TP
 \fB\-d\fR,
@@ -57,11 +52,16 @@ Otherwise, PATH will be checked for\fB\ nano, vi, emacs, ed\fR (in order). The f
 .BR
 .TP
 If argument \fB\-e\fR is given,\fB\ gen\fR with search PATH for OPTARG.
-.SH "EXIT STATUS"
-If the exit statement is used with a value, then\fB\ gen\fR\ exits with the numeric value given to it.
+.SH "FILE PERMISSIONS"
+When applicable,\fB\ gen\fR uses\fB chmod\fR\ to give execute permissions to the user; if errors occur, an error message from\fB\ chmod\fR will be displayed.
 .BR
 .TP
-Otherwise, if there were no problems during execution,\fB\ gen\fR exits with the value\fB\ 0\fR.
+Otherwise, read & write permissions are set for the user to ensure minimum functionality. In either case, symbolic modes are used to promote least privilege ( u+rw ).
+.BR
+.TP
+Users however, are currently restricted to using octal modes when settings permissions with\fB\ gen\fR\ (\fB\ gen -c\fR\ 754 example.sh ). This is simply to facilitate input validation.
+.SH "EXIT STATUS"
+If there were no problems during execution,\fB\ gen\fR exits with the value\fB\ 0\fR.
 .BR
 .TP
 If an error occurs,\fB\ gen\fR exits with a non-zero value that may provide some context as below:
