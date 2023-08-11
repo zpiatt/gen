@@ -24,7 +24,6 @@ Generate (gen) is a command line script template automation tool written in `bas
 ### Upcoming features:
   - I'm working on building a more robust testing environment that includes a few more operating systems. 
   - Continued bug testing/verifying functionality across Linux/BSD/MacOS.
-  - I'm working on input validation for custom file mode bits within the `get_args` function. ( See issue: https://github.com/zpiatt/gen/issues/22 )
 
  Please send me any ideas for increasing portability, or adding features!
 

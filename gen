@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.3 - August 3, 2023"
+readonly version="Generate (gen) version: 2.0.4 - August 11, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -53,7 +53,8 @@ which_ed() {
 gen_template() {
     if [[ -n "${template:-}" ]]; then
         local basename="${file##*/}"
-        printf "%s\n" "${template//basename/${basename%.*}}"
+        basename="${basename%.*}"
+        printf "%s\n" "${template//basename/${basename}}"
     else
         printf "#!/usr/bin/env %s\n" "$ext"
     fi
@@ -62,7 +63,7 @@ gen_template() {
 create_file() {
     if [[ -f "$file" && -z "${force:-}" ]]; then
         read -erp "gen: overwrite '${file}'? " overwrite
-        [[ ! "${overwrite,,}" =~ ^y(es)?$ ]] && exit 0
+        [[ ! "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] && exit 0
     fi
     
     if [[ -f "$file" ]]; then
