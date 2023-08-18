@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.4 - August 11, 2023"
+readonly version="Generate (gen) version: 2.0.5 - August 18, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -33,20 +33,20 @@ usage() {
     printf "  -v,   display version number and exit\n\n"
     printf "Full documentation <https://github.com/zpiatt/gen>\n"
     printf "or available locally via: info generate\n"
-    exit 0
 }
 
 which_ed() {
     local editors ed
     editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
-    
+    editors=( "${1:-${editors[@]}}" )
+
     for ed in "${editors[@]}"; do
         if [[ -n "$ed" ]]; then
             editor="$(command -v "$ed" 2> /dev/null)" && return 0
         fi
     done
-    
-    printf "No editor found in PATH.\n" >&2
+
+    printf "gen: %s: not found in PATH.\n" >&2 "${1:-editor}"
     printf "Try 'gen -h' for more information.\n" >&2; exit 127
 }
 
@@ -65,7 +65,7 @@ create_file() {
         read -erp "gen: overwrite '${file}'? " overwrite
         [[ ! "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] && exit 0
     fi
-    
+
     if [[ -f "$file" ]]; then
         chmod "${custom_mode:-${mode:-u+rw}}" "$file" || exit 126
         (:>"$file") &> /dev/null || { printf "gen: %s: Permission denied\n" "$file" >&2; exit 126; }
@@ -95,27 +95,19 @@ get_template() {
 get_args() {
     while getopts ':hqfdsvc:e:' option; do
         case "$option" in
-            h) usage ;;
             q) quiet=true ;;
             f) force=true ;;
             d) default=true ;;
+            h) usage; exit 0 ;;
             s) suppress=true ;;
+            e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
-            c) 
+            c)
                 if [[ "$OPTARG" =~ [0-7]{3} ]]; then
-                    custom_mode="$OPTARG" 
+                    custom_mode="$OPTARG"
                 else
                     printf "gen: invalid mode: %s\n" "$OPTARG" >&2
                     printf "Try 'gen -h' for more information.\n" >&2; exit 2
-                fi
-            ;;
-
-            e)
-                if command -v "$OPTARG" &> /dev/null; then
-                    editor="$OPTARG"
-                else
-                    printf "gen: %s: not found\n" "$OPTARG" >&2
-                    printf "Try 'gen -h' for more information.\n" >&2; exit 127
                 fi
             ;;
 
@@ -126,7 +118,7 @@ get_args() {
         esac
     done
     shift "$(( OPTIND -1 ))"
-    
+
     if [[ -z "${1:-}" ]]; then
         printf "gen: Must provide filename.\n" >&2
         printf "Try 'gen -h' for more information.\n" >&2; exit 2
