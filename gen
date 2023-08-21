@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.5 - August 18, 2023"
+readonly version="Generate (gen) version: 2.0.6 - August 21, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -41,13 +41,10 @@ which_ed() {
     editors=( "${1:-${editors[@]}}" )
 
     for ed in "${editors[@]}"; do
-        if [[ -n "$ed" ]]; then
-            editor="$(command -v "$ed" 2> /dev/null)" && return 0
-        fi
+        [[ -n "$ed" ]] && { editor="$(command -v "$ed" 2> /dev/null)" && return 0; }
     done
 
-    printf "gen: %s: not found in PATH.\n" >&2 "${1:-editor}"
-    printf "Try 'gen -h' for more information.\n" >&2; exit 127
+    error "${1:-editor}: not found in PATH." 127
 }
 
 gen_template() {
@@ -92,6 +89,8 @@ get_template() {
         template="$(< "${HOME}/.gen/templates/template.${ext}")"
 }
 
+error() { printf "gen: %s\nTry 'gen -h' for more information.\n" >&2 "$1"; exit "$2"; }
+
 get_args() {
     while getopts ':hqfdsvc:e:' option; do
         case "$option" in
@@ -103,30 +102,20 @@ get_args() {
             e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             c)
-                if [[ "$OPTARG" =~ [0-7]{3} ]]; then
-                    custom_mode="$OPTARG"
-                else
-                    printf "gen: invalid mode: %s\n" "$OPTARG" >&2
-                    printf "Try 'gen -h' for more information.\n" >&2; exit 2
-                fi
+                [[ "$OPTARG" =~ [0-7]{3} ]] || error "invalid mode: $OPTARG" 2
+
+                custom_mode="$OPTARG"
             ;;
 
-            ?)
-                printf "gen: invalid option -- '%s'\n" "$OPTARG" >&2
-                printf "Try 'gen -h' for more information.\n" >&2; exit 2
-            ;;
+            ?) error "invalid option -- '$OPTARG'" 2 ;;
         esac
     done
     shift "$(( OPTIND -1 ))"
 
-    if [[ -z "${1:-}" ]]; then
-        printf "gen: Must provide filename.\n" >&2
-        printf "Try 'gen -h' for more information.\n" >&2; exit 2
-    elif [[ -d "$1" ]]; then
-        printf "gen: cannot generate '%s': Is a directory\n" "$1" >&2; exit 2
-    else
-        file="$1"
-    fi
+    [[ -z "${1:-}" ]] && error "Must provide filename." 2
+    [[ -d "$1" ]] && error "cannot generate '$1': Is a directory" 2
+
+    file="$1"
 }
 
 main() {
