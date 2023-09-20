@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.6 - August 21, 2023"
+readonly version="Generate (gen) version: 2.0.7 - September 20, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -58,6 +58,7 @@ gen_template() {
 }
 
 create_file() {
+    local overwrite
     if [[ -f "$file" && -z "${force:-}" ]]; then
         read -erp "gen: overwrite '${file}'? " overwrite
         [[ ! "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] && exit 0
@@ -76,6 +77,7 @@ check_ext() {
     case "${ext:-}" in
         py) mode="u+rwx" ;;
         awk) mode="u+rwx" ;;
+        lua) mode="u+rwx" ;;
         js) mode="u+rwx"; ext="node" ;;
         pl) mode="u+rwx"; ext="perl" ;;
         sh|bash) mode="u+rwx"; ext="bash" ;;
@@ -92,6 +94,7 @@ get_template() {
 error() { printf "gen: %s\nTry 'gen -h' for more information.\n" >&2 "$1"; exit "$2"; }
 
 get_args() {
+    local option
     while getopts ':hqfdsvc:e:' option; do
         case "$option" in
             q) quiet=true ;;
