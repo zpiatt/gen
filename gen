@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.7 - September 20, 2023"
+readonly version="Generate (gen) version: 2.0.8 - December 29, 2023"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -105,7 +105,7 @@ get_args() {
             e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             c)
-                [[ "$OPTARG" =~ [0-7]{3} ]] || error "invalid mode: $OPTARG" 2
+                [[ "$OPTARG" =~ ^[0-7]{3}$ ]] || error "invalid mode: $OPTARG" 2
 
                 custom_mode="$OPTARG"
             ;;
