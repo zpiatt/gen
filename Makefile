@@ -1,5 +1,5 @@
 PREFIX = /usr
-MANDIR = $(PREFIX)/share/man
+MANDIR = $(PREFIX)/share/man/man1
 
 .PHONY: install uninstall
 
@@ -18,10 +18,10 @@ install:
 	@cp -p gen $(DESTDIR)$(PREFIX)/bin/gen
 	@cp -rp templates $(DESTDIR)$(USER_HOME)/.gen
 	@test -z $(SUDO_USER) || chown -R $(SUDO_USER) $(USER_HOME)/.gen
-	@cp -p gen.1 $(DESTDIR)$(MANDIR)/man1
+	@gzip -c gen.1 > $(DESTDIR)$(MANDIR)/gen.1.gz
 	@chmod 755 $(DESTDIR)$(PREFIX)/bin/gen
 
 uninstall:
 	@rm -rf $(DESTDIR)$(USER_HOME)/.gen
 	@rm -rf $(DESTDIR)$(PREFIX)/bin/gen
-	@rm -rf $(DESTDIR)$(MANDIR)/man1/gen.1*
+	@rm -rf $(DESTDIR)$(MANDIR)/gen.1*
