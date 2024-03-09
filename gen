@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.8 - December 29, 2023"
+readonly version="Generate (gen) version: 2.0.9 - March 9, 2024"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -37,8 +37,7 @@ usage() {
 
 which_ed() {
     local editors ed
-    editors=( "${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed )
-    editors=( "${1:-${editors[@]}}" )
+    [[ -n "${1:-}" ]] && editors=("$1") || editors=("${VISUAL:-${EDITOR:-}}" nano vi emacs ed)
 
     for ed in "${editors[@]}"; do
         [[ -n "$ed" ]] && { editor="$(command -v "$ed" 2> /dev/null)" && return 0; }
@@ -61,7 +60,7 @@ create_file() {
     local overwrite
     if [[ -f "$file" && -z "${force:-}" ]]; then
         read -erp "gen: overwrite '${file}'? " overwrite
-        [[ ! "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] && exit 0
+        [[ "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] || exit 0
     fi
 
     if [[ -f "$file" ]]; then
@@ -75,11 +74,11 @@ create_file() {
 
 check_ext() {
     case "${ext:-}" in
-        py) mode="u+rwx" ;;
         awk) mode="u+rwx" ;;
         lua) mode="u+rwx" ;;
         js) mode="u+rwx"; ext="node" ;;
         pl) mode="u+rwx"; ext="perl" ;;
+        py) mode="u+rwx"; ext="python3" ;;
         sh|bash) mode="u+rwx"; ext="bash" ;;
         *sh) mode="u+rwx" ;;
         *) [[ -z "$template" ]] && quiet=true ;;
@@ -105,7 +104,7 @@ get_args() {
             e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             c)
-                [[ "$OPTARG" =~ ^[0-7]{3}$ ]] || error "invalid mode: $OPTARG" 2
+                [[ "$OPTARG" =~ ^[0-7]{3,4}$ ]] || error "invalid mode: $OPTARG" 2
 
                 custom_mode="$OPTARG"
             ;;
@@ -123,7 +122,7 @@ get_args() {
 
 main() {
     get_args "$@"
-    [[ "$file" == *.* ]] && ext="${file##*.}"
+    [[ "$file" =~ . ]] && ext="${file##*.}"
     [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
     check_ext
     create_file
