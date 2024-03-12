@@ -7,10 +7,10 @@
 Generate (gen) is a command line script template automation tool written in `bash 3.2+`. Generate automates the creation of script files, modifies file permissions, inputs custom and default script templates, and launches your favorite editor seamlessly.
 
 ### Recently added:
-  - Version 2 is here, check the release notes for more details!
+  - Improved `-c` option. Added support for symbolic mode bits. `gen -c 754 example.py` and `gen -c u+x,g+x example.py` are both valid now.
+      - In case the regex used isn't all-inclusive, `chmod` is able to print it's error messages directly to aid in troubleshooting.
 
 ### Upcoming features:
-  - I'm working on building a more robust testing environment that includes more operating systems and shell environments as well as integrating workflows into pull requests. 
   - Continued bug testing/verifying functionality across Linux/BSD/MacOS.
 
  Please send me any ideas for increasing portability, or adding features!

@@ -18,12 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.0.9 - March 9, 2024"
+readonly version="Generate (gen) version: 2.1.0 - March 12, 2024"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
     printf "Generate FILE, input script template, and launch default editor.\n\n"
-    printf "  -c,   change file permissions with octal mode bits ( gen -c 754 example.sh )\n"
+    printf "  -c,   change file permissions with octal or symbolic mode bits\n"
     printf "  -d,   use default template despite available custom template\n"
     printf "  -e,   manually select editor ( gen -e nano example.py )\n"
     printf "  -f,   overwrite existing file contents, never prompt\n"
@@ -104,9 +104,11 @@ get_args() {
             e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             c)
-                [[ "$OPTARG" =~ ^[0-7]{3,4}$ ]] || error "invalid mode: $OPTARG" 2
-
-                custom_mode="$OPTARG"
+                if [[ "$OPTARG" =~ ^([ugoa]*[-+=][rwxXst]+,?)+$ ]] || [[ "$OPTARG" =~ ^[0-7]{3,4}$ ]]; then
+                    custom_mode="$OPTARG"
+                else
+                    error "invalid mode: $OPTARG" 2
+                fi
             ;;
 
             ?) error "invalid option -- '$OPTARG'" 2 ;;

@@ -1,4 +1,4 @@
-.TH GENERATE "1" "August 2023" "gen version: 2.0.4" "User Commands"
+.TH GENERATE "1" "March 2024" "gen version: 2.1.0" "User Commands"
 .SH NAME
 Generate \- create script using templates.
 .SH SYNOPSIS
@@ -12,7 +12,7 @@ A FILE argument that exists will not be overwritten/modified, unless \fB\-f\fR i
 .SH OPTIONS
 .TP
 \fB\-c\fR,
-change FILE permissions with octal mode bits (\fB\ gen -c\fR 754 example.sh )
+change FILE permissions with octal or symbolic mode bits (\fB\ gen -c\fR 754 example.sh,\fB\ gen -c\fR u+x example.sh )
 .BR
 .TP
 \fB\-d\fR,
@@ -51,15 +51,13 @@ will use the value of these variables.
 Otherwise, PATH will be checked for\fB\ nano, vi, emacs, ed\fR (in order). The first command in PATH will be used. If no command is found,\fB\ gen\fR\ with exit with exit status 127 (see also\fB\ EXIT STATUS\fR\ below).
 .BR
 .TP
-If argument \fB\-e\fR is given,\fB\ gen\fR with search PATH for OPTARG.
+If argument \fB\-e\fR is given,\fB\ gen\fR will search PATH for OPTARG.
 .SH "FILE PERMISSIONS"
 When applicable,\fB\ gen\fR uses\fB chmod\fR\ to give execute permissions to the user; if errors occur, an error message from\fB\ chmod\fR will be displayed.
 .BR
 .TP
 Otherwise, read & write permissions are set for the user to ensure minimum functionality. In either case, symbolic modes are used to promote least privilege ( u+rw ).
 .BR
-.TP
-Users however, are currently restricted to using octal modes when settings permissions with\fB\ gen\fR\ (\fB\ gen -c\fR\ 754 example.sh ). This is simply to facilitate input validation.
 .SH "EXIT STATUS"
 If there were no problems during execution,\fB\ gen\fR exits with the value\fB\ 0\fR.
 .BR
@@ -82,7 +80,7 @@ Written by Zac Piatt.
 .SH "REPORTING BUGS"
 Report any bugs to <zpiatt@protonmail.com>
 .SH COPYRIGHT
-Copyright \(co 2023 Free Software Foundation, Inc.
+Copyright \(co 2024 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 .br
 This is free software: you are free to change and redistribute it.
