@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.1.0 - March 12, 2024"
+readonly version="Generate (gen) version: 2.1.1 - April 3, 2024"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -37,7 +37,7 @@ usage() {
 
 which_ed() {
     local editors ed
-    [[ -n "${1:-}" ]] && editors=("$1") || editors=("${VISUAL:-${EDITOR:-}}" nano vi emacs ed)
+    [[ -n "${1:-}" ]] && editors=("$1") || editors=("${VISUAL:-}" "${EDITOR:-}" nano vi emacs ed)
 
     for ed in "${editors[@]}"; do
         [[ -n "$ed" ]] && { editor="$(command -v "$ed" 2> /dev/null)" && return 0; }
@@ -86,8 +86,8 @@ check_ext() {
 }
 
 get_template() {
-    [[ -f "${HOME}/.gen/templates/template.${ext}" ]] && \
-        template="$(< "${HOME}/.gen/templates/template.${ext}")"
+    [[ -f "${HOME}/.config/gen/templates/template.${ext}" ]] && \
+        template="$(< "${HOME}/.config/gen/templates/template.${ext}")"
 }
 
 error() { printf "gen: %s\nTry 'gen -h' for more information.\n" >&2 "$1"; exit "$2"; }
@@ -104,7 +104,7 @@ get_args() {
             e) which_ed "$OPTARG" ;;
             v) printf "%s\n" "$version"; exit 0 ;;
             c)
-                if [[ "$OPTARG" =~ ^([ugoa]*[-+=][rwxXst]+,?)+$ ]] || [[ "$OPTARG" =~ ^[0-7]{3,4}$ ]]; then
+                if [[ "$OPTARG" =~ ^([ugoa]*[-+=][rwxXst]+,?)+$ || "$OPTARG" =~ ^[0-7]{3,4}$ ]]; then
                     custom_mode="$OPTARG"
                 else
                     error "invalid mode: $OPTARG" 2
