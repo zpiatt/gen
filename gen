@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.1.1 - April 3, 2024"
+readonly version="Generate (gen) version: 2.1.2 - April 20, 2024"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
@@ -124,7 +124,7 @@ get_args() {
 
 main() {
     get_args "$@"
-    [[ "$file" =~ . ]] && ext="${file##*.}"
+    [[ "$file" == "." ]] && ext="${file##*.}"
     [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
     check_ext
     create_file
