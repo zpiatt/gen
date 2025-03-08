@@ -18,21 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-readonly version="Generate (gen) version: 2.1.4 - March 6, 2025"
+readonly version="Generate (gen) version: 2.2.0 - March 8, 2025"
 
 usage() {
     printf "Usage: gen [OPTION]... [FILE]...\n"
     printf "Generate FILE, input script template, and launch default editor.\n\n"
     printf "  -c,   change file permissions with octal or symbolic mode bits\n"
-    printf "  -d,   use default template despite available custom template\n"
+    printf "  -d,   use default shebang instead of available template\n"
     printf "  -e,   manually select editor ( gen -e nano example.py )\n"
     printf "  -f,   overwrite existing file contents, never prompt\n"
     printf "  -h,   display help and exit\n"
     printf "  -q,   quiet automatic input of script template\n"
+    printf "  -r,   make file read-only after initial write\n"
     printf "  -s,   suppress launch of editor\n"
     printf "  -v,   display version number and exit\n\n"
     printf "Full documentation <https://github.com/zpiatt/gen>\n"
-    printf "or available locally via: info generate\n"
 }
 
 which_ed() {
@@ -58,60 +58,52 @@ gen_template() {
 
 create_file() {
     local overwrite
-    if [[ -f "$file" && -z "${force:-}" ]]; then
+    if [[ -f "$file" && "${force:-}" != "true" ]]; then
         read -erp "gen: overwrite '${file}'? " overwrite
         [[ "$(echo "$overwrite" | awk '{print tolower($0)}')" =~ ^y(es)?$ ]] || exit 0
     fi
 
     if [[ -f "$file" ]]; then
-        chmod "${custom_mode:-${mode:-u+rw}}" "$file" || exit 126
+        chmod "${custom_mode:-$mode}" "$file" || exit 126
         (:>"$file") &> /dev/null || { printf "gen: %s: Permission denied\n" "$file" >&2; exit 126; }
     else
         (:>"$file") &> /dev/null || { printf "gen: %s: Permission denied\n" "$file" >&2; exit 126; }
-        chmod "${custom_mode:-${mode:-u+rw}}" "$file" || { rm -f "$file"; exit 126; }
+        chmod "${custom_mode:-$mode}" "$file" || { rm -f "$file"; exit 126; }
     fi
 }
 
 check_ext() {
     case "${ext:-}" in
-        awk) mode="u+rwx" ;;
-        lua) mode="u+rwx" ;;
         js) mode="u+rwx"; ext="node" ;;
         pem) quiet=true; read_only=true ;;
         pl) mode="u+rwx"; ext="perl" ;;
         py) mode="u+rwx"; ext="python3" ;;
         sh|bash) mode="u+rwx"; ext="bash" ;;
-        *sh) mode="u+rwx" ;;
+        awk|lua|*sh) mode="u+rwx" ;;
         *) [[ -z "$template" ]] && quiet=true ;;
     esac
 }
 
 get_template() {
-    [[ -f "${HOME}/.config/gen/templates/template.${ext}" ]] && \
-        template="$(< "${HOME}/.config/gen/templates/template.${ext}")"
+    local custom_template="${HOME}/.config/gen/templates/template.${ext}"
+    [[ -f "$custom_template" ]] && template="$(< "$custom_template")"
 }
 
 error() { printf "gen: %s\nTry 'gen -h' for more information.\n" >&2 "$1"; exit "$2"; }
 
 get_args() {
     local option
-    while getopts ':hqfdsvc:e:' option; do
+    while getopts ':c:de:fhqrsv' option; do
         case "$option" in
-            q) quiet=true ;;
-            f) force=true ;;
+            c) custom_mode="$OPTARG" ;;
             d) default=true ;;
-            h) usage; exit 0 ;;
-            s) suppress=true ;;
             e) which_ed "$OPTARG" ;;
+            f) force=true ;;
+            h) usage; exit 0 ;;
+            q) quiet=true ;;
+            r) read_only=true ;;
+            s) suppress=true ;;
             v) printf "%s\n" "$version"; exit 0 ;;
-            c)
-                if [[ "$OPTARG" =~ ^([ugoa]*[-+=][rwxXst]+,?)+$ || "$OPTARG" =~ ^[0-7]{3,4}$ ]]; then
-                    custom_mode="$OPTARG"
-                else
-                    error "invalid mode: $OPTARG" 2
-                fi
-            ;;
-
             ?) error "invalid option -- '$OPTARG'" 2 ;;
         esac
     done
@@ -124,15 +116,17 @@ get_args() {
 }
 
 main() {
+    mode='u+rw'
+    [[ -f "${HOME}/.config/gen/gen.conf" ]] && . "${HOME}/.config/gen/gen.conf"
     get_args "$@"
     [[ "$file" == *.* ]] && ext="${file##*.}"
-    [[ -z "${default:-}" && -n "${ext:-}" ]] && get_template
+    [[ "${default:-}" != "true" && -n "${ext:-}" ]] && get_template
     check_ext
     create_file
-    [[ -z "${quiet:-}" ]] && gen_template > "$file"
-    [[ -z "${suppress:-}" && -z "${editor:-}" ]] && which_ed
-    [[ -z "${suppress:-}" ]] && "$editor" "$file"
-    [[ -n "${read_only:-}" ]] && chmod 400 "$file"
+    [[ "${quiet:-}" != "true" ]] && gen_template > "$file"
+    [[ "${suppress:-}" != "true" && -z "${editor:-}" ]] && which_ed
+    [[ "${suppress:-}" != "true" ]] && "$editor" "$file"
+    [[ "${read_only:-}" == "true" ]] && chmod 400 "$file"
     return 0
 }
 

@@ -17,7 +17,8 @@ install:
 	@mkdir -p $(DESTDIR)$(PREFIX)/bin
 	@cp -p gen $(DESTDIR)$(PREFIX)/bin/gen
 	@cp -rp templates $(DESTDIR)$(USER_HOME)/.config/gen
-	@test -z $(SUDO_USER) || chown -R $(SUDO_USER) $(USER_HOME)/.config/gen
+	@cp -p gen.conf $(DESTDIR)$(USER_HOME)/.config/gen
+	@test -z $(SUDO_USER) || chown -R $(SUDO_USER): $(USER_HOME)/.config/gen
 	@gzip -c gen.1 > $(DESTDIR)$(MANDIR)/gen.1.gz
 	@chmod 755 $(DESTDIR)$(PREFIX)/bin/gen
 
